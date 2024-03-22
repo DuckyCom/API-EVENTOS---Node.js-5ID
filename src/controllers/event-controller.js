@@ -11,7 +11,7 @@ router.get("/event", (req, res) => {
     const { name, category, startDate, tag } = req.query;
     const eventService = new EventService();
 
-   const eventos = eventService.getAllEvents(name, category, startDate, tag);
+   const eventos = eventService.getAllEvents(name, category, startDate, tag, pageSize, requestedPage);
 
 
     res.json(eventos);

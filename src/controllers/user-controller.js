@@ -14,6 +14,7 @@ router.get("/user/login", (req, res) => {
     // aca van los usuarios que se logean, se chequea con la BD
 });
 
+
 router.post("/user/register", (req, res) => {
     const body = req.body;
     console.log(body);
