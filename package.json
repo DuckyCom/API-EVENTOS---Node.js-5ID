@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/DuckyCom/API-EVENTOS-Node.js-5ID#readme",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.19.1",
-    "pg": "^8.11.3"
+    "pg": "^8.11.5"
   }
 }

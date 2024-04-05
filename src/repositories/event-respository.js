@@ -1,5 +1,5 @@
 import pg from "pg";
-import { DBConfig } from "./db.js";
+import { config } from "./db.js"; //cambiar dbconfig por el nuevo dotenv
 
 const client = pg.Client(DBConfig);
 client.connect();
