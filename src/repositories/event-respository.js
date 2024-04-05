@@ -1,8 +1,9 @@
 import pg from "pg";
 import { config } from "./db.js"; //cambiar dbconfig por el nuevo dotenv
 
-const client = pg.Client(DBConfig);
+const client = new pg.Client(config);
 client.connect();
+
 
 const sql = "SELECT * FROM events";
 const respuesta = await client.query(sql);
@@ -17,10 +18,32 @@ export class EventRepository{
         const where2 = `WHERE name = ${name}`;
         const where3 = `WHERE startDate = ${startDate}`;
         
-
-
         const values = client.query(sqlQuery);
 
         return values.rows;
     }
 }
+
+
+ 
+
+
+// SHEBAR, DESPUE BORRARR
+// import pg from 'pg';
+// import { DBconfig } from "./src/dbconfig.js";
+
+// const client = new pg.Client(DBconfig); 
+// client.connect();
+
+// const sql = "select * from events";
+// const respuesta = await client.query(sql);// el await ESPERA. sirve para que no empiece a ejecutar otras cosas sin esto
+
+
+
+// export class EventRepository {
+//     async getAllEvents() {
+//         const sql = `select * from events limit ${pageSize} offset ${requestedPage}`;
+//         const respuesta = await client.query(sql);
+//         return respuesta.rows;
+//     }
+// }

@@ -1,22 +1,32 @@
 import express, { json, query } from "express";
 import { EventService } from "../service/event-service.js";
-import { EventRepository } from "../repositories/event-respository.js";
+// import { EventRepository } from "../repositories/event-respository.js";
 const router = express.Router();
+const eventService = new EventService();
 
 //Busqueda de un Evento
 
 
-//aca inicia toda la travesia, donde se ingresan que datos se necesitan y esta parte los procesa
+//PUNTO 2: LISTADO 
 router.get("/", (req, res) => {
-    const { name, category, startDate, tag } = req.query;
-    const eventService = new EventService();
-    const pageSize = 1;
-    const requestedPage = 1;
-    const eventos = eventService.getAllEvents(name, category, startDate, tag, pageSize, requestedPage);
-
-
-    res.json(eventos);
+    const pageSize = req.query.pageSize;
+    const page = req.query.page;
+    const tag = req.query.tag;
+    const startDate = req.query.startDate;
+    const name = req.query.name;
+    const category = req.query.category;
+    
+    try{
+        const allEvents = eventService.getAllEvents(page, pageSize, tag, startDate, name, category, req.url);
+        return res.json(allEvents);
+    }catch(error){ 
+        console.log("Error al buscar");
+        return res.json("Un Error");
+    }    
 });
+
+//PUNTO 3: BUSQUEDA DE EVENTO
+
 
 
 
@@ -43,23 +53,23 @@ router.get("/event}", (req,res) => {
 
 // });
 router.get("/:id", (req, res) => {
-    // const pageSize = req.query.pageSize;
-    // const page = req.query.page;
-    const pageSize = 10;
-    const page = 2;
+    const pageSize = req.query.pageSize;
+    const page = req.query.page;
+    // const pageSize = 10;
+    // const page = 2;
     const offset = (page - 1) * pageSize;
     const limit = pageSize;
     const eventId = req.params.id;
 
     // Consulta SQL para obtener el detalle del evento y su localización completa
-    const sqlQuery = ` SELECT events.*, locality_table.*, province_table.* 
-    FROM events AS events 
-    JOIN event_locations AS event_locations_table ON event_locations_table.id = events.id_event_location
-    JOIN locations AS locality_table ON event_locations_table.id_location = locality_table.id 
-    JOIN provinces AS province_table ON locality_table.id_province = province_table.id  
+    const sqlQuery = ` SELECT e.*, l.*, p.* 
+    FROM events e 
+    JOIN event_locations el ON el.id = e.id_event_location
+    JOIN locations l ON el.id_location = l.id 
+    JOIN provinces p ON l.id_province = p.id  
     LIMIT 1 OFFSET 1`;
     
-    res.json();
+    res.json(sqlQuery);
     //falta agregar el que te haga la query
 });
 
