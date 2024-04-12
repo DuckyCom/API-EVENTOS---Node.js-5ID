@@ -5,6 +5,7 @@ import EventController from "./src/controllers/event-controller.js";
 
 const app = express(); // Inicia la API REST
 app.use(express.json());
+app.use("/user", UserController);
 const port = 7777;
 app.use("/event", EventController);
 app.listen(port, () => {

@@ -4,9 +4,6 @@ import { EventService } from "../service/event-service.js";
 const router = express.Router();
 const eventService = new EventService();
 
-//Busqueda de un Evento
-
-
 //PUNTO 2: LISTADO 
 router.get("/", (req, res) => {
     const pageSize = req.query.pageSize;
@@ -25,33 +22,35 @@ router.get("/", (req, res) => {
     }    
 });
 
-//PUNTO 3: BUSQUEDA DE EVENTO
-
-
-
-
-// Busqueda de un evento
-router.get("/event}", (req,res) => {
+// PUNTO 3: BUSQUEDA DE UN EVENTO
+router.get("/", (req,res) => {
     const pageSize = req.query.pageSize;
     const page = req.query.page;
     const offset = (page - 1) * pageSize;
     const limit = pageSize;
-    var sqlQuery = `SELECT * FROM events LIMIT ${limit} OFFSET ${offset} WHERE id = ${req.params.id}`;
+    // var sqlQuery = `SELECT * FROM events LIMIT ${limit} OFFSET ${offset} WHERE id = ${req.params.id}`; ACA HAY QUE LLAMAR A LA FUNCION getEventByFilters() de event-service.js
+    try{
+        const event = eventService.getEventByFilters(req.query.name, req.query.category, req.query.startDate, req.query.tag, limit, offset);
+        return res.json(event);
+    } catch(error){
+        console.log("Error al buscar");
+        return res.json("Un Error");
+    }
 });
 
 
-// Listado participantes
-// router.get("/event/{id}", (req,res) => {
-//     const pageSize = req.query.pageSize;
-//     const page = req.query.page;
-//     const offset = (page - 1) * pageSize;
-//     const limit = pageSize;
-//     var sqlQuery = `SELECT * FROM events LIMIT ${limit} OFFSET ${offset} WHERE id = ${req.params.id}`;
-    
+//PUNTO 4: DETALLE DE UN EVENTO
+router.get("/:id", (req, res) => {
+    try {
+        const evento = eventService.getEventById(req.params.id);
+        return res.json(evento);
+    }
+    catch(error){
+        console.log("No hay evento existente");
+        return res.json("Ha ocurrido un error");
+    }
+});
 
-
-
-// });
 router.get("/:id", (req, res) => {
     const pageSize = req.query.pageSize;
     const page = req.query.page;
@@ -75,24 +74,44 @@ router.get("/:id", (req, res) => {
 
 
 // PUNTO 5: LISTADO DE PARTICIPANTES DE UN EVENTO.
-router.get("/{id}/enrollment", (req, res) => {
-    const pageSize = req.query.pageSize;
-    const page = req.query.page;
-    const { first_name, last_name, username, attended } = req.query;
 
-
-    res.send(filteredParticipants);
+router.get("/:id/enrollment", (req, res) => {
+    const first_name = req.query.first_name;
+    const last_name = req.query.last_name;
+    const userName = req.query.userName;
+    const attended = req.query.attended;
+    try {
+        const event = eventService.getParticipantesEvento(req.params.id, first_name, last_name, userName, attended);
+        if(!event){
+            return res.status(400).json({ error: 'El formato de attended no es valido' });
+        }
+        return res.json(event);
+    }
+    catch(error){
+        console.log("Error al buscar");
+        return res.json("Un Error");
+    }
 });
 
 
-router.post("/{id}/enrollment", (req,res) => {
-    const body = req.body;
-    console.log(body);
+// router.get("/{id}/enrollment", (req, res) => {
+//     const pageSize = req.query.pageSize;
+//     const page = req.query.page;
+//     const { first_name, last_name, username, attended } = req.query;
 
 
-    // aca van los eventos que se crean, se cargarian a la BD
+//     res.send(filteredParticipants);
+// });
 
-});
+
+// router.post("/{id}/enrollment", (req,res) => {
+//     const body = req.body;
+//     console.log(body);
+
+
+//     // aca van los eventos que se crean, se cargarian a la BD
+
+// });
     
 export default router;
 
