@@ -81,11 +81,11 @@ router.get("/:id/enrollment", (req, res) => {
     const userName = req.query.userName;
     const attended = req.query.attended;
     try {
-        const event = eventService.getParticipantesEvento(req.params.id, first_name, last_name, userName, attended);
-        if(!event){
+        const participantesEvento = eventService.getParticipantesEvento(req.params.id, first_name, last_name, userName, attended);
+        if(!participantesEvento){
             return res.status(400).json({ error: 'El formato de attended no es valido' });
         }
-        return res.json(event);
+        return res.json(participantesEvento);
     }
     catch(error){
         console.log("Error al buscar");
@@ -93,25 +93,23 @@ router.get("/:id/enrollment", (req, res) => {
     }
 });
 
+// PUNTO 9: INSCRIPCION DE UN PARTICIPANTE A UN EVENTO
 
-// router.get("/{id}/enrollment", (req, res) => {
-//     const pageSize = req.query.pageSize;
-//     const page = req.query.page;
-//     const { first_name, last_name, username, attended } = req.query;
-
-
-//     res.send(filteredParticipants);
-// });
-
-
-// router.post("/{id}/enrollment", (req,res) => {
-//     const body = req.body;
-//     console.log(body);
-
-
-//     // aca van los eventos que se crean, se cargarian a la BD
-
-// });
+router.post("/:id/enrollment", (req, res) => {
+    const id_user = req.body;
+    const id_event = req.params.id;
+    try {
+        const event = eventService.postInscripcionEvento(req.params.id, req.body.id_user);
+        if(!event){
+            return res.status(400).json({ error: 'El formato de attended no es valido' });
+        } // ACA FALTA PONER SI NO SE PUEDE INSCRIBIR Y SI SE PUDO INSCRIBIR
+        return res.json(event);
+    }
+    catch(error){
+        console.log("Error al inscribir");
+        return res.json("Un Error");
+    }
+});
     
 export default router;
 

@@ -90,6 +90,11 @@ export class EventService {
     const resultadoGet = eventRepository.getParticipantsEvent(id, queryPrimero);
     return resultadoGet;
   }
+  postInscripcionEvento(id, id_user){
+    const eventRepository = new EventRepository();
+    const resultadoPost = eventRepository.postInscripcionEvento(id, id_user);
+    return resultadoPost;
+  }
+
+
 }
-
-

@@ -26,8 +26,19 @@ export class EventRepository{
         return values.rows;
     }
     getParticipantesEvento(id, first_name, last_name, userName, attended) {
-        var sqlQuery = `SELECT * FROM participants WHERE id_event = ${id}`;
+        var sqlQuery = `SELECT * FROM event_enrollment WHERE id_event = ${id}`;
         const values = client.query(sqlQuery);
         return values.rows;
     }
+    postInscripcionEvento(id_event,id_user) { 
+        var vectorValores = [id_event, id_user];
+        var sqlQuery = `INSERT INTO event_enrollments(id_event,id_user,registration_date_time) VALUES ($1, $2) `;
+        const values = client.query(sqlQuery, vectorValores);
+        return values.rows;
+    }
+
+    
+
+
+
 }
