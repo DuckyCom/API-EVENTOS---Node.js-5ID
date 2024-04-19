@@ -40,4 +40,22 @@ export class ProvinciasService {
         return returnEntity;
     }
 
+    async insertProvinceNew(name, full_name, latitude, longitude){
+        let insertedProvince = null;
+        console.log(name, full_name, latitude, longitude)
+        const query = {
+            text: 'INSERT INTO provinces (name, full_name, latitude, longitude) VALUES ($1, $2, $3, $4)',
+            values: [name, full_name, latitude, longitude],
+        };
+    
+        try {
+            const result = await client.query(query);
+            insertedProvince = result.rows[0];
+            console.log('Nueva provincia insertada:', insertedProvince);
+        } catch (error) {
+            console.error('Error al insertar nueva provincia:', error);
+        }
+        return insertedProvince;
+    }
+
 }

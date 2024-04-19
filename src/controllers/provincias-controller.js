@@ -30,9 +30,24 @@ router.get('/', async (req, res) => {
 });
 
 // Crear una nueva provincia
+/* REVISAR PORQUE CUANDO PONEMOS ESTE BODY NO NOS INSERTA, APARECE EL NAME, FULL NAME, LATITUDE Y LONGITUDE COMO UNDEFINED COMO UNDEFINED: 
+{
+  name:"PalmaM"
+  full_name: "Palma de Mallorca"
+  latitude: 39.571625
+  longitude: 2.650544
+}
+*/
 router.post('/', async (req, res) => {
+  const name = req.body.name;
+  const full_name = req.body.full_name;
+  const latitude = req.body.latitude;
+  const longitude = req.body.longitude;
+
+  console.log(name, full_name, latitude, longitude)
+
   try {
-    const provincia = await provinciaService.insertProvinceNew(req.body);
+    const provincia = await provinciaService.insertProvinceNew(name,full_name, latitude, longitude);
     res.status(201).json(provincia);
   } catch (err) {
     res.status(400).json({ message: err.message });
