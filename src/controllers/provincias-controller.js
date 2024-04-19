@@ -1,12 +1,14 @@
-import express, {Request, Response} from "express";
-const express = require('express');
+import {ProvinciasService} from "../service/provincias-service.js";
+import express from "express";
 const router = express.Router();
 
+const provinciaService = new ProvinciasService();
 
 // Obtener una provincia por ID
-router.get('/Provincias/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const provincia = await Provincia.findByPk(req.params.id);
+    console.log(req.params.id)
+    const provincia = await provinciaService.findProvByID(req.params.id);
     res.json(provincia);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -14,29 +16,23 @@ router.get('/Provincias/:id', async (req, res) => {
 });
 
 // Obtener todas las provincias con paginación
-router.get('/Provincias', async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const offset = (page - 1) * limit;
+router.get('/', async (req, res) => {
+  const limit = req.query.limit;
+  const offset = req.query.offset;
 
   try {
-    const provincias = await Provincia.findAndCountAll({
-      limit: limit,
-      offset: offset,
-    });
-    res.json({
-      total: provincias.count,
-      results: provincias.rows,
-    });
+    const provincias = await provinciaService.findProvPaginated(limit, offset);
+    console.log(provincias);
+    res.json(provincias);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
 // Crear una nueva provincia
-router.post('/Provincias', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const provincia = await Provincia.create(req.body);
+    const provincia = await provinciaService.insertProvinceNew(req.body);
     res.status(201).json(provincia);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -44,9 +40,9 @@ router.post('/Provincias', async (req, res) => {
 });
 
 // Actualizar una provincia por ID
-router.put('/Provincias/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
-    const provincia = await Provincia.update(req.body, {
+    const provincia = await provinciaService.update(req.body, {
       where: { id: req.params.id },
       returning: true,
     });
@@ -57,9 +53,9 @@ router.put('/Provincias/:id', async (req, res) => {
 });
 
 // Eliminar una provincia por ID
-router.delete('/Provincias/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    await Provincia.destroy({
+    await provinciaService.destroy({
       where: { id: req.params.id },
     });
     res.json({ message: 'Provincia eliminada' });
@@ -68,4 +64,5 @@ router.delete('/Provincias/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+
+export default router;

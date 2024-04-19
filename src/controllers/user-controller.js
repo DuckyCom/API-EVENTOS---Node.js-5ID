@@ -2,7 +2,7 @@ import express from "express";
 
 const router = express.Router();
 
-
+/* PUNTO 6: Autenticacion de Usuarios */
 router.post("/login", (req, res) => {
     const { username, password } = req.body;
     const userService = new UserService();
@@ -19,6 +19,7 @@ router.post("/login", (req, res) => {
         });
     }
 });
+
 
 
 

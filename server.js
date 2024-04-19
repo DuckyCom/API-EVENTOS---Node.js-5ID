@@ -1,13 +1,16 @@
 import express from "express";
 import UserController from "./src/controllers/user-controller.js";
 import EventController from "./src/controllers/event-controller.js";
+import ProviciasController from "./src/controllers/provincias-controller.js"
 // import ProvinciasController from "./src/controllers/provincias-controller.js";
 
 const app = express(); // Inicia la API REST
 app.use(express.json());
-app.use("/user", UserController);
+//app.use("/provincias", UserController);
 const port = 7777;
 app.use("/event", EventController);
+app.use("/provincias", ProviciasController);
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
