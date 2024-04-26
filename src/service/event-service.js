@@ -82,3 +82,5 @@ async getEventsByFilters(name, category, startDate, tag, pageSize, page) {
   }
 
 }
+
+

@@ -8,3 +8,5 @@ function generarLimitOffset(pageSize, page) {
 }
 
 export default generarLimitOffset;
+
+
