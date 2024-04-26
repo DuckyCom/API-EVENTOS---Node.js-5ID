@@ -81,6 +81,45 @@ async getEventsByFilters(name, category, startDate, tag, pageSize, page) {
     return enrollmentResultado;
   }
 
+  async createEvent(name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
+    let createEvent = null;
+    const query = {
+        text: 'INSERT INTO events (name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+        values: [name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user], 
+    };
+    try {
+        const result = await client.query(query);
+        createEvent = result.rows[0];
+        console.log('Nuevo evento insertado:', createEvent);
+    } catch (error) {
+        console.error('Error al insertar nuevo evento:', error);
+    }
+    return createEvent;
+
+  }
+  async updateEvent(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
+    let updateEvent = null;
+    const query = {
+        text: 'UPDATE events SET name = $1, description = $2, id_event_category = $3, id_event_location = $4, start_date = $5, duration_in_minutes = $6, price = $7, enabled_for_enrollment = $8, max_assistance = $9, id_creator_user = $10 WHERE id = $11 RETURNING *',
+        values: [name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user, id],
+    };
+    try {
+        const result = await client.query(query);
+        updateEvent = result.rows[0];
+        console.log('Evento actualizado:', updateEvent);
+    } catch (error) {
+        console.error('Error al actualizar evento:', error);
+    }
+    return updateEvent;
+  }
+
+  async deleteEvent(id){
+    const eventRepository = new EventRepository();
+    const resultadoDelete = eventRepository.deleteEvent(id);
+    return resultadoDelete;
+  }
+
+
 }
 
 

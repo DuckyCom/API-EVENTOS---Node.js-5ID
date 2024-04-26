@@ -67,9 +67,34 @@ router.get("/:id/enrollment", (req, res) => {
 
 // PUNTO 8: CRUD
 // Crear un evento
+// EJEMPLO USADO:
+/*{
+    "name": "Harry Styles",
+    "description": "Un concierto muy STYLE",
+    "id_event_category": 1,
+    "id_event_location": 1,
+    "start_date": "2022/12/03 t 00:00:00" ,
+    "duration_in_minutes": 210,
+    "price": 17500,
+    "enabled_for_enrollment": true,
+    "max_assistance": 90000,
+    "id_creator_user": 1
+}
+*/
 router.post("/", (req, res) => {
+    const name = req.body.name;
+    const description = req.body.description;
+    const id_event_category = req.body.id_event_category;
+    const id_event_location = req.body.id_event_location;
+    const start_date = req.body.start_date;
+    const duration_in_minutes = req.body.duration_in_minutes;
+    const price = req.body.price;
+    const enabled_for_enrollment = req.body.enabled_for_enrollment;
+    const max_assistance = req.body.max_assistance;
+    const id_creator_user = req.body.id_creator_user;
+
     try {
-        const evento = eventService.createEvent(req.body);
+        const evento = eventService.createEvent(name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
         return res.json(evento);
     }
     catch(error){
@@ -78,14 +103,53 @@ router.post("/", (req, res) => {
     }
 });
 
-//editar un evento del que soy el organizador
+//EJEMPLO USADO:
+
+
 router.put("/:id", (req, res) => {
+    const id = req.params.id;
+    const name = req.body.name;
+    const description = req.body.description;
+    const start_date = req.body.start_date;
+    const end_date = req.body.end_date;
+    const category = req.body.category;
+    const capacity = req.body.capacity;
+    const location = req.body.location;
+    const image = req.body.image;
+    const tag = req.body.tag;
+    const price = req.body.price;
+    const user_id = req.body.user_id;
     try {
-        const evento = eventService.editEvent(req.params.id, req.body);
+        const evento = eventService.updateEvent(id, name, description, start_date, end_date, category, capacity, location, image, tag, price, user_id);
         return res.json(evento);
     }
     catch(error){
         console.log("Error al editar evento");
+        return res.json("Un Error");
+    }
+});
+
+//editar un evento del que soy el organizador
+router.put("/:id", (req, res) => {
+    try {
+        const evento = eventService.editEvent(id, name, description, start_date, end_date, category, capacity, location, image, tag, price, user_id);
+        return res.json(evento);
+    }
+    catch(error){
+        console.log("Error al editar evento");
+        return res.json("Un Error");
+    }
+});
+
+
+//eliminar un evento del que soy el organizador
+router.delete("/:id", (req, res) => {
+    try {
+        const evento = eventService.deleteEvent(id);
+        return res.json(evento);
+    }
+    catch(error){
+        console.log("Error al eliminar evento");
         return res.json("Un Error");
     }
 });
@@ -103,7 +167,7 @@ router.post("/:id/enrollment", (req, res) => {
             return res.status(400).json({ error: 'El formato de attended no es valido' });
         } else{
             return res.json("Se ha inscripto correctamente al evento");
-        }// ACA FALTA PONER SI NO SE PUEDE INSCRIBIR Y SI SE PUDO INSCRIBIR
+        }
     }
     catch(error){
         console.log("Error al inscribir");

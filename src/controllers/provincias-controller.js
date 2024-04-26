@@ -29,23 +29,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Crear una nueva provincia
-/* REVISAR PORQUE CUANDO PONEMOS ESTE BODY NO NOS INSERTA, APARECE EL NAME, FULL NAME, LATITUDE Y LONGITUDE COMO UNDEFINED COMO UNDEFINED: 
-{
-  name:"PalmaM"
-  full_name: "Palma de Mallorca"
-  latitude: 39.571625
-  longitude: 2.650544
-}
-*/
+
 router.post('/', async (req, res) => {
   const name = req.body.name;
   const full_name = req.body.full_name;
   const latitude = req.body.latitude;
   const longitude = req.body.longitude;
-
-  console.log(name, full_name, latitude, longitude)
-
   try {
     const provincia = await provinciaService.insertProvinceNew(name,full_name, latitude, longitude);
     res.status(201).json(provincia);
@@ -54,30 +43,32 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Actualizar una provincia por ID
-router.put('/:id', async (req, res) => {
-  try {
-    const provincia = await provinciaService.update(req.body, {
-      where: { id: req.params.id },
-      returning: true,
-    });
-    res.json(provincia[1][0]);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-// Eliminar una provincia por ID
 router.delete('/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
   try {
-    await provinciaService.destroy({
-      where: { id: req.params.id },
-    });
-    res.json({ message: 'Provincia eliminada' });
+    const provincia = await provinciaService.deleteProvince(id);
+    res.status(200).json(provincia);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
+router.put('/:id', async (req, res) => {
+  const id = req.params.id;
+  const name = req.body.name;
+  const full_name = req.body.full_name;
+  const latitude = req.body.latitude;
+  const longitude = req.body.longitude;
+  console.log(id, name, full_name, latitude, longitude);
+  try {
+    const provincia = await provinciaService.updateProvince(id, name, full_name, latitude, longitude);
+    res.status(200).json(provincia);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 
 export default router;

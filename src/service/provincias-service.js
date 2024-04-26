@@ -58,6 +58,40 @@ export class ProvinciasService {
         return insertedProvince;
     }
 
+    async deleteProvince(id){
+        let deletedProvince = null;
+        const query = {
+            text: 'DELETE FROM provinces WHERE id = $1',
+            values: [id],
+        };
+    
+        try {
+            const result = await client.query(query);
+            deletedProvince = result.rows[0];
+            console.log('Provincia eliminada:', deletedProvince);
+        } catch (error) {
+            console.error('Error al eliminar provincia:', error);
+        }
+        return deletedProvince;
+    }
+
+    async updateProvince(id, name, full_name, latitude, longitude){
+        let updatedProvince = null;
+        const query = {
+            text: 'UPDATE provinces SET name = $1, full_name = $2, latitude = $3, longitude = $4 WHERE id = $5',
+            values: [name, full_name, latitude, longitude, id],
+        };
+    
+        try {
+            const result = await client.query(query);
+            updatedProvince = result.rows[0];
+            console.log('Provincia actualizada:', updatedProvince);
+        } catch (error) {
+            console.error('Error al actualizar provincia:', error);
+        }
+        return updatedProvince;
+    }
+
 }
 
 

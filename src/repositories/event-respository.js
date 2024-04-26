@@ -85,6 +85,18 @@ export class EventRepository{
     }
     
 
+    async createvent(name, description, start_date, end_date, location, id_event_category, online, image_url, id_user) {
+        const query = `INSERT INTO events(name, description, start_date, end_date, location, id_event_category, online, image_url, id_user) VALUES ('${name}', '${description}', '${start_date}', '${end_date}', '${location}', ${id_event_category}, ${online}, '${image_url}', ${id_user})`;
+        return await client.query(query);
+    }
+
+    async updateEvent(id, name, description, start_date, end_date, location, id_event_category, online, image_url) {
+        const query = `UPDATE events SET name = '${name}', description = '${description}', start_date = '${start_date}', end_date = '${end_date}', location = '${location}', id_event_category = ${id_event_category}, online = ${online}, image_url = '${image_url}' WHERE id = ${id}`;
+        return await client.query(query);
+    }
+
+
+
 
 
 }
