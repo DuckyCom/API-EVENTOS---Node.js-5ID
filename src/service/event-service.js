@@ -114,9 +114,19 @@ async getEventsByFilters(name, category, startDate, tag, pageSize, page) {
   }
 
   async deleteEvent(id){
-    const eventRepository = new EventRepository();
-    const resultadoDelete = eventRepository.deleteEvent(id);
-    return resultadoDelete;
+    let registrosAfectados = 0;
+    const query = {
+        text: 'DELETE FROM events WHERE id = $1 RETURNING *',
+        values: [id],
+    };
+    try {
+        const result = await client.query(query);
+        registrosAfectados = result.rowCount;
+        console.log('rowCount:', registrosAfectados);
+    } catch (error) {
+        //console.error('Error al eliminar evento:', error);
+    }
+    return registrosAfectados;
   }
 
 

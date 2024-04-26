@@ -1,4 +1,4 @@
-import express, { json, query } from "express";
+import express, { Router, json, query } from "express";
 import { EventService } from "../service/event-service.js";
 // import { EventRepository } from "../repositories/event-respository.js";
 const router = express.Router();
@@ -81,7 +81,7 @@ router.get("/:id/enrollment", (req, res) => {
     "id_creator_user": 1
 }
 */
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
     const name = req.body.name;
     const description = req.body.description;
     const id_event_category = req.body.id_event_category;
@@ -94,7 +94,7 @@ router.post("/", (req, res) => {
     const id_creator_user = req.body.id_creator_user;
 
     try {
-        const evento = eventService.createEvent(name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
+        const evento = await eventService.createEvent(name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
         return res.json(evento);
     }
     catch(error){
@@ -104,13 +104,25 @@ router.post("/", (req, res) => {
 });
 
 //EJEMPLO USADO:
-
-
-router.put("/:id", (req, res) => {
+/*
+{
+    "name": "Coldplay",
+    "description": "Un show de Coldplay",
+    "id_event_category": 1,
+    "id_event_location": 1,
+    "start_date": "2022/11/01 t 20:00:00" ,
+    "duration_in_minutes": 180,
+    "price": 18000,
+    "enabled_for_enrollment": true,
+    "max_assistance": 90000,
+    "id_creator_user": 1
+}
+*/
+router.put("/:id", async (req, res) => {
     const id = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
-    const start_date = req.body.start_date;
+    const start_date = req.body.start_date; // DE ACA LO UNICO QUE NO NOS ANDA ES EL TEMA DEL STARTDATE A LA HORA DE POSTMAN. YA QUE MANDA QUE NO DEJA TIPO INTEGER.
     const end_date = req.body.end_date;
     const category = req.body.category;
     const capacity = req.body.capacity;
@@ -119,8 +131,10 @@ router.put("/:id", (req, res) => {
     const tag = req.body.tag;
     const price = req.body.price;
     const user_id = req.body.user_id;
+// const elEvento = req.body; POLSHU RECOMIENDA HACER UNA CLASE DE EVENTO QUE CONTENGA TODO LO DE ARRIBA, YO TAMBIEN LO PIENSO, PERO NO HAY TIEMPO AHORA PARA HACERLO. LO HACEMOS EN LA SEGUNDA ENTREGA :)
+
     try {
-        const evento = eventService.updateEvent(id, name, description, start_date, end_date, category, capacity, location, image, tag, price, user_id);
+        const evento = await eventService.updateEvent(id, name, description, start_date, end_date, category, capacity, location, image, tag, price, user_id);
         return res.json(evento);
     }
     catch(error){
@@ -128,25 +142,25 @@ router.put("/:id", (req, res) => {
         return res.json("Un Error");
     }
 });
-
-//editar un evento del que soy el organizador
-router.put("/:id", (req, res) => {
-    try {
-        const evento = eventService.editEvent(id, name, description, start_date, end_date, category, capacity, location, image, tag, price, user_id);
-        return res.json(evento);
-    }
-    catch(error){
-        console.log("Error al editar evento");
-        return res.json("Un Error");
-    }
-});
-
 
 //eliminar un evento del que soy el organizador
-router.delete("/:id", (req, res) => {
+//EJEMPLO USADO:
+/*
+
+
+
+*/
+router.delete("/:id", async (req, res) => {
+    const id = req.params.id;
     try {
-        const evento = eventService.deleteEvent(id);
-        return res.json(evento);
+        const rowsAffected = await eventService.deleteEvent(id);
+        if (rowsAffected > 0){
+            return res.status(200).json({'mensaje':'Se elimino el evento'});
+        }else{
+            return res.status(400).json({'mensaje':'no se elimino'});
+        }
+
+        
     }
     catch(error){
         console.log("Error al eliminar evento");
