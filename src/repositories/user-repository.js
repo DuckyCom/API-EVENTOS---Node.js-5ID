@@ -4,7 +4,7 @@ import {config} from "./db.js"
 const client = new pg.Client(config);
 client.connect();
 
-class UserRepository {
+export class UserRepository {
     verificacionUsuario(username,password){
         var sqlQuery = `SELECT * FROM users WHERE username = ${username} AND password = ${password}`;
         const values = client.query(sqlQuery);

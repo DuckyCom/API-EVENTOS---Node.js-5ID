@@ -2,11 +2,16 @@ import { query } from "express";
 // import {ProvinciasRepository} from "../repositories/event-respository.js";
 import pg from "pg";
 import { config } from "../repositories/db.js"; 
+import { Pagination } from "../utils/paginacion.js";
 const sql = "SELECT * FROM provinces";
-const client = new pg.Client(config);
-client.connect();
+const pagination = new Pagination();
 
 export class ProvinciasService {
+    constructor(){
+        this.client = new pg.Client(config);
+        this.client.connect();
+    }
+
     async findProvByID (id) {
         let returnEntity = null;
         console.log("Estoy en: findProvByID");
@@ -15,7 +20,7 @@ export class ProvinciasService {
             text: 'SELECT * FROM provinces WHERE id = $1',
             values: [id]
           };
-          const result = await client.query(query);
+          const result = await this.client.query(query);
           returnEntity = result.rows[0]; //no hace falta el "[]"?
           console.log(result);
         } catch (error) {
@@ -24,13 +29,16 @@ export class ProvinciasService {
         return returnEntity;
     }
     async findProvPaginated (limit, offset) {
+        const parseLimit = pagination.parseLimit(limit);
+        const parseOffset = pagination.parseOffset(offset);
         let returnEntity = null;
         console.log("Estoy en: findProvPaginated");
         try {
-          const query = 'SELECT * FROM provinces LIMIT $1 OFFSET $2'
-            const values = [limit, offset]
-          
-          const result = await client.query(query, values);
+          const query = {
+            text: 'SELECT * FROM provinces LIMIT $1 OFFSET $2',
+            values: [parseLimit, parseOffset]
+          };
+          const result = await client.query(query);
           //console.log(result);
           returnEntity = result.rows[0];
           console.log(result);
