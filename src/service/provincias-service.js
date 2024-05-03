@@ -97,6 +97,9 @@ export class ProvinciasService {
         } catch (error) {
             console.error('Error al actualizar provincia:', error);
         }
+        if(!updatedProvince){
+            throw new Error('Not Found');
+        }
         return updatedProvince;
     }
 

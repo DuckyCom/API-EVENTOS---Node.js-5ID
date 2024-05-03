@@ -7,9 +7,9 @@ import ProviciasController from "./src/controllers/provincias-controller.js"
 const app = express(); // Inicia la API REST
 app.use(express.json());
 const port = 7777;
-app.use("/event", EventController);
-app.use("/provincias", ProviciasController);
-app.use("/user", UserController);
+app.use("/api/event", EventController);
+app.use("/api/provincias", ProviciasController);
+app.use("/api/user", UserController);
 
 
 app.listen(port, () => {

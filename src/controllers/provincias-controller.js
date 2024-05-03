@@ -9,9 +9,9 @@ router.get('/:id', async (req, res) => {
   try {
     console.log(req.params.id)
     const provincia = await provinciaService.findProvByID(req.params.id);
-    res.json(provincia);
+    res.status(200).json(provincia);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(404).json({ message: err.message });
   }
 });
 
@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
   try {
     const provincias = await provinciaService.findProvPaginated(limit, offset);
     console.log(provincias);
-    res.json(provincias);
+    res.status(200).json(provincias);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -50,7 +50,11 @@ router.delete('/:id', async (req, res) => {
     const provincia = await provinciaService.deleteProvince(id);
     res.status(200).json(provincia);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    if(err.message === 'Not Found') {
+      res.status(404).json({ message: err.message });
+    } else{
+      res.status(500).json({ message: err.message });
+    }
   }
 });
 
@@ -65,7 +69,11 @@ router.put('/:id', async (req, res) => {
     const provincia = await provinciaService.updateProvince(id, name, full_name, latitude, longitude);
     res.status(200).json(provincia);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    if (err.message === 'Not Found') {
+      res.status(404).json({ message: err.message });
+    } else {
+      res.status(500).json({ message: err.message });
+    }
   }
 });
 

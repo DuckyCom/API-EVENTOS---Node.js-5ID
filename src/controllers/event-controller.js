@@ -51,8 +51,9 @@ router.get("/:id/enrollment", (req, res) => {
     const last_name = req.query.last_name;
     const userName = req.query.userName;
     const attended = req.query.attended;
+    const rating = req.query.rating;
     try {
-        const participantesEvento = eventService.getParticipantesEvento(req.params.id, first_name, last_name, userName, attended);
+        const participantesEvento = eventService.getParticipantesEvento(req.params.id, first_name, last_name, userName, attended, rating);
         if(!participantesEvento){
             return res.status(400).json({ error: 'El formato de attended no es valido' });
         }
@@ -95,11 +96,15 @@ router.post("/", async (req, res) => {
 
     try {
         const evento = await eventService.createEvent(name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
-        return res.json(evento);
+        return res.status(200).json(evento);
     }
     catch(error){
         console.log("Error al crear evento");
-        return res.json("Un Error");
+        if(error === 'Not Found'){
+            return res.status(404).json({ message: error });
+        } else if(error === 'Bad Request'){
+            return res.status(400).json({ message: error });
+        }
     }
 });
 
@@ -158,9 +163,7 @@ router.delete("/:id", async (req, res) => {
             return res.status(200).json({'mensaje':'Se elimino el evento'});
         }else{
             return res.status(400).json({'mensaje':'no se elimino'});
-        }
-
-        
+        }        
     }
     catch(error){
         console.log("Error al eliminar evento");

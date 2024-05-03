@@ -2,7 +2,7 @@ import { query } from "express";
 import {EventRepository} from "../repositories/event-respository.js";
 import pg from "pg";
 import { config } from "../repositories/db.js"; 
-const sql = "SELECT * FROM events";
+import { Pagination } from "../utils/paginacion.js";
 const client = new pg.Client(config);
 client.connect();
 
@@ -19,8 +19,6 @@ async getEventsByFilters(name, category, startDate, tag, pageSize, page) {
       throw new Error('Error al obtener eventos por filtros');
   }
 }
-
-
 
   async getEventById (id) {
     let returnEntity = null;
@@ -41,7 +39,7 @@ async getEventsByFilters(name, category, startDate, tag, pageSize, page) {
   
 
 
-  getParticipantesEvento(id, first_name, last_name, userName, attended){
+  getParticipantesEvento(id, first_name, last_name, userName, attended, rating){
     if(attended || !attended) {
         return false;
     }
@@ -58,6 +56,9 @@ async getEventsByFilters(name, category, startDate, tag, pageSize, page) {
     if(attended){
       queryPrimero += ` AND event_enrollments.attended = ${attended}`;
     }    
+    if(rating){
+      queryPrimero += ` AND event_enrollments.rating >= ${rating}`;
+    }
     const eventRepository = new EventRepository();
     const resultadoGet = eventRepository.getParticipantsEvent(id, queryPrimero);
     return resultadoGet;
