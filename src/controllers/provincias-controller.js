@@ -29,6 +29,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/:id/locations', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const locations = await provinciaService.findLocationsByProvince(id);
+    res.status(200).json(locations);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+
+});
+
 
 router.post('/', async (req, res) => {
   const name = req.body.name;

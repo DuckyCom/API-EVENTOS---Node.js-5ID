@@ -187,8 +187,13 @@ router.post("/:id/enrollment", (req, res) => {
         }
     }
     catch(error){
+        if(error.message === 'Not Found'){
+            res.status(404).json({message:error.message})
+        } else{
+            res.status(400).json("Un Error");
+
+        }
         console.log("Error al inscribir");
-        return res.json("Un Error");
     }
 });
 

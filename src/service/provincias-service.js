@@ -80,6 +80,9 @@ export class ProvinciasService {
         } catch (error) {
             console.error('Error al eliminar provincia:', error);
         }
+        if(!deletedProvince){
+            throw new Error('Not Found')
+        }
         return deletedProvince;
     }
 

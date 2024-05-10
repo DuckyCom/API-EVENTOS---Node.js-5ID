@@ -1,17 +1,19 @@
 import express from "express";
-
+// import { JsonWebTokenError } from "jsonwebtoken";
+import {UserService} from "../service/user-service.js";
 const router = express.Router();
+const userService = new UserService();
 
 /* PUNTO 6: Autenticacion de Usuarios */
 router.post("/login", (req, res) => {
     const { username, password } = req.body;
-    const userService = new UserService();
     
     // Aquí puedes agregar la lógica para verificar el nombre de usuario y la contraseña con la base de datos
-    const verificadorUsuario = userService.verificarUsuario(username, password);
+    const verificadorUsuario = userService.verificacionUsuario(username, password);
     if (!verificadorUsuario) {
         // Si la autenticación es exitosa, puedes enviar una respuesta con el estado 200
-        // falta agregar aca TOKEN
+        // falta agregar aca TOKEN con JWT
+
         return res.status(200).send({
             id: 0,
             username: username,

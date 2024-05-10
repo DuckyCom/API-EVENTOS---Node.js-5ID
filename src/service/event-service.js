@@ -43,7 +43,7 @@ async getEventsByFilters(name, category, startDate, tag, pageSize, page) {
     if(attended || !attended) {
         return false;
     }
-    var queryPrimero;
+    var queryPrimero = "";
     if(first_name){
       queryPrimero += ` AND users.first_name = ${first_name}`;
     }    
@@ -60,7 +60,7 @@ async getEventsByFilters(name, category, startDate, tag, pageSize, page) {
       queryPrimero += ` AND event_enrollments.rating >= ${rating}`;
     }
     const eventRepository = new EventRepository();
-    const resultadoGet = eventRepository.getParticipantsEvent(id, queryPrimero);
+    const resultadoGet =  eventRepository.getParticipantesEvento(id, queryPrimero);
     return resultadoGet;
   }
   postInscripcionEvento(id, id_user){

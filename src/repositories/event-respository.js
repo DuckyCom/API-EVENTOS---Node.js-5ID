@@ -23,7 +23,7 @@ export class EventRepository{
             const { rows: categoryRows } = await client.query(categoryIdQuery);
             const categoryId = categoryRows[0]?.id;
             if (categoryId) {
-                sqlQuery += ` AND id_event_category = ${categoryId}`;
+                sqlQuery += ` AND id_event_category = '${categoryId}'`;
             }
         }
         if (startDate) {
@@ -35,7 +35,7 @@ export class EventRepository{
             const tagId = tagRows[0]?.id;
             if (tagId) {
                 // Luego, necesitamos verificar la tabla de relaciones event_tags para obtener eventos asociados con este tag
-                sqlQuery += ` AND id IN (SELECT id_event FROM event_tags WHERE id_tag = ${tagId})`;
+                sqlQuery += ` AND id IN (SELECT id_event FROM event_tags WHERE id_tag = '${tagId}+')`;
             }
         }
         
@@ -62,14 +62,28 @@ export class EventRepository{
         console.log(values);
         return values;
     }
-    getParticipantesEvento(id, first_name, last_name, userName, attended) {
-        var sqlQuery = `SELECT * FROM event_enrollment WHERE id_event = ${id}`;
+    async getParticipantesEvento(id, queryPrimero) {
+        var sqlQuery = `SELECT * FROM event_enrollment WHERE id_event = ${id} ${queryPrimero}`;
         const values = client.query(sqlQuery);
+        console.log(values);
         return values;
     }
-    postInscripcionEvento(id_event,id_user) { 
-        var vectorValores = [id_event, id_user];
-        var sqlQuery = `INSERT INTO event_enrollments(id_event,id_user,registration_date_time) VALUES ($1, $2) `;
+    async postInscripcionEvento(id_event,id_user) { 
+        let inscipcionEvento;
+        const query = {
+            text: `INSERT INTO event_enrollments(id_event,id_user,registration_date_time) VALUES ($1, $2) `,
+            values: [id_event, id_user],
+        }
+        try{
+            const result = await client.query(query);
+            inscipcionEvento = result.rows[0];
+            console.log('Usuario Inscripto', inscipcionEvento);
+        } catch(error){
+            console.error('Error al insertar usuario:', error)
+        }
+        if(!inscipcionEvento){
+            throw new Error('Not Found')
+        } 
         const values = client.query(sqlQuery, vectorValores);
         return values;
     }
