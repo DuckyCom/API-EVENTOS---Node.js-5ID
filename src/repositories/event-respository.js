@@ -63,7 +63,12 @@ export class EventRepository{
         return values;
     }
     async getParticipantesEvento(id, queryPrimero) {
-        var sqlQuery = `SELECT * FROM event_enrollment WHERE id_event = ${id} ${queryPrimero}`;
+        var sqlQuery = `SELECT er.*,u.first_name,u.last_name,u.username,e.name FROM event_enrollments er
+        LEFT JOIN users u ON er.id_user = u.id
+        LEFT JOIN events e ON er.id_event = e.id 
+		LEFT JOIN event_tags et ON e.id = et.id_event
+        LEFT JOIN tags ON et.id = tags.id
+        WHERE e.id = ${id} + queryPrimero`;
         const values = client.query(sqlQuery);
         console.log(values);
         return values;
