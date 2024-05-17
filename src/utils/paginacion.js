@@ -17,21 +17,25 @@ export class PaginationDto{
 }
 
 export class Pagination{
-    parseLimit(limit){
-        return !isNaN(parseInt(limit)) ? parseInt(limit) : 15;
+    static ParseLimit(limit) {
+        return !isNaN(limit) && limit > 0 ? limit : 10;
     }
-    parseOffset(offset){
-        return !isNaN(parseInt(offset)) ? parseInt(offset) : 0;
+
+    static ParseOffset(offset) {
+        return !isNaN(offset) ? offset : 0;
     }
-    buildPaginationDto(limit,currentOffset,total, path){
-        const response = new PaginationDto();
-        response.limit = limit;
-        response.offset = currentOffset;
-        response.total = total;
-        if(limit !== -1){
-            response.nextPage = limit + currentOffset < total ? this.buildNextPage(path,limit,currentOffset,total) : null;
-        }
-        return response;
+
+    static BuildPagination(collection, limit, offset, url, total){
+        return {
+            collection: collection,
+            pagination: {
+                limit: limit, 
+                offset: offset,
+                nextPage: (offset+1)*limit < total ? (!url.includes("offset") ? (url.includes("limit") ? url.concat("&offset=" + (offset+1)) : url.concat("offset=" + (offset+1))): `${process.env.BASE_URL}${url.replace(/(offset=)\d+/, 'offset=' + (parseInt(offset) + 1))}`):null,
+                total: total
+            }
+        };
+        
     }
 
 }
