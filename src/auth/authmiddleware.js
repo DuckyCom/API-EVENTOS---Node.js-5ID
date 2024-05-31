@@ -2,7 +2,7 @@ import { desencryptToken } from "./jwt.js";
 
 export function AuthMiddleware(req, res, next) {
     if(!req.headers.authorization){
-        return res.status(401).json("Forbidden");
+        return res.status(401).send("Forbidden");
     } else{
         const token = req.headers.authorization.split(" ")[1];
         const decryptToken = desencryptToken(token);

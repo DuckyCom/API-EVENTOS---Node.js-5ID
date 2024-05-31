@@ -8,24 +8,20 @@ client.connect();
 
 
 export class EventCatService {
-
-
-  async  getAllEventsCat(){
-        //Habrá que añadir el middleware
-        console.log("Estoy en event-category-service")
-        try {
-            const eventCatRepository = new EventCatRepository();
-            const respuesta = await eventCatRepository.getAllEventsCat();
-            // console.log("Estoy en:  DE event-category-service", events);
-            return respuesta;
-        } catch (error) {
-            throw new Error('Error al obtener eventos por filtros');
-        }     
-
+    async getAllEventsCat(limit, offset) {
+      console.log("Estoy en event-category-service");
+      try {
+        const eventCatRepository = new EventCatRepository();
+        return await eventCatRepository.getAllEventsCat(limit, offset);
+      } catch (error) {
+        console.error("Error al obtener eventos por filtros", error);
+        throw new Error('Error al obtener eventos por filtros');
+      }
     }
+  
 
 
-   async  getEventsCatById(id){
+   async getEventsCatById(id){
                 //Habrá que añadir el middleware
                 console.log("Estoy en GET event-category-service")
                 try {

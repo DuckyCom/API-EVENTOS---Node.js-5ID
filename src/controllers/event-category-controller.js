@@ -6,18 +6,21 @@ import e from "express";
 const router = express.Router();
 const eventCatService = new EventCatService(); //Esto lo dejamos asi??????
 
-router.get("/", async (req, res) => {
+
+router.get("/", AuthMiddleware, async (req, res) => {
+    const limit = req.query.limit;
+    const offset = req.query.offset;  
+    console.log("limit: ", limit, "y offset: ", offset)
+
     try {
-        const evento = await eventCatService.getAllEventsCat();
-        //Para comprobar si funciona el evento
-        console.log("estoy en GET evento-category-controller");
-        return res.status(200).json(evento);
+      const evento = await eventCatService.getAllEventsCat(limit, offset);
+      console.log("Estoy en GET evento-category-controller");
+      return res.status(200).json(evento);
+    } catch (error) {
+      console.error("Error al obtener todas las categorias de eventos", error);
+      return res.status(500).json({ error: "Ha ocurrido un error" });
     }
-    catch(error){
-        console.log("Error al obtener todas las categorias de eventos");
-        return res.json("Ha ocurrido un error");
-    }
-});
+  });
 
 
 router.get("/:id", async (req, res) => {

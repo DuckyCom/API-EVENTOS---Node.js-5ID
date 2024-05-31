@@ -1,55 +1,50 @@
-// function generarLimitOffset(pageSize, page) {
-//     if (!pageSize || !page || pageSize <= 0 || page <= 0) {
-//         throw new Error('El tamaño de página y el número de página son obligatorios y deben ser mayores que cero.');
-//     }
-//     const offset = (page - 1) * pageSize;
-//     const limitOffsetClause = `LIMIT ${pageSize} OFFSET ${offset}`;
-//     return limitOffsetClause;
-// }
+import "dotenv/config";
 
-// export default generarLimitOffset;
+const BASE_URL = process.env.BASE_URL;
 
-export class PaginationDto{
-    limit;
-    offset;
-    nextPage;
-    total;
+export class PaginationDto {
+  constructor(limit, offset, nextPage, total) {
+    this.limit = limit;
+    this.offset = offset;
+    this.nextPage = nextPage;
+    this.total = total;
+  }
 }
 
-export class Pagination{
-    static ParseLimit(limit) {
-        return !isNaN(limit) && limit > 0 ? limit : 10;
-    }
+export class Pagination {
+  constructor() {
+    this.limitRegex = /limit=\d+/;
+    this.offsetRegex = /offset=\d+/;
+  }
 
-    static ParseOffset(offset) {
-        return !isNaN(offset) ? offset : 0;
-    }
+  parseLimit(limit) {
+    return !isNaN(parseInt(limit)) ? parseInt(limit) : 2; //modificado porque tengo 3 categorias
+  }
 
-    static BuildPagination(collection, limit, offset, url, total){
-        return {
-            collection: collection,
-            pagination: {
-                limit: limit, 
-                offset: offset,
-                nextPage: (offset+1)*limit < total ? (!url.includes("offset") ? (url.includes("limit") ? url.concat("&offset=" + (offset+1)) : url.concat("offset=" + (offset+1))): `${process.env.BASE_URL}${url.replace(/(offset=)\d+/, 'offset=' + (parseInt(offset) + 1))}`):null,
-                total: total
-            }
-        };
-        
-    }
+  parseOffset(offset) {
+    return !isNaN(parseInt(offset)) ? parseInt(offset) : 0;
+  }
 
+  buildPaginationDto(limit, currentOffset, total, path) {
+    const nextPage =
+      limit !== -1 && limit + currentOffset < total
+        ? this.buildNextPage(path, limit, currentOffset)
+        : null;
+
+    return new PaginationDto(limit, currentOffset, nextPage, total);
+  }
+
+  buildNextPage(path, limit, currentOffset) {
+    let url = BASE_URL + path;
+
+    url = this.limitRegex.test(url)
+      ? url.replace(this.limitRegex, `limit=${limit}`)
+      : `${url}${url.includes("?") ? "&" : "?"}limit=${limit}`;
+
+    url = this.offsetRegex.test(url)
+      ? url.replace(this.offsetRegex, `offset=${currentOffset + limit}`)
+      : `${url}${url.includes("?") ? "&" : "?"}offset=${currentOffset + limit}`;
+
+    return url;
+  }
 }
-
-// const response = {
-// collection: events,
-// pagination: {
-//     limit: parsedLimit ,
-//     offset: parsedOffset,
-//     nextPage:((parsedOffset + 1) * parsedLimit <= totalCount) ? `${ process.env.BASE_URL} / ${ path } ?limit= ${ parsedLimit } &offset= ${ parsedOffset + 1 }${ ( eventName ) ? `&eventName= ${ eventName } ` : null}${ ( eventCategory ) ? `&eventCategory= ${ eventCategory } ` : null} ${ ( eventDate ) ? `&eventDate= ${ eventDate } ` : null}${ ( eventTag ) ? `&eventTag= ${ eventTag } ` : null} ` : null , 
-//     total: totalCount
-//     }
-// }
-
-
-
-
