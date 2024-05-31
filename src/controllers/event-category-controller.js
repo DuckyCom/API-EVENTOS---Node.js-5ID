@@ -1,27 +1,34 @@
 import express, { Router, json, query } from "express";
 import { EventCatService } from "../service/event-category-service.js"; //ESTO TAMBIEN LO DEJAMOS ASI??
 import { AuthMiddleware } from "../auth/AuthMiddleware.js";
+import { Pagination } from "../utils/paginacion.js";
 import e from "express";
 // import { EventRepository } from "../repositories/event-respository.js";
 const router = express.Router();
 const eventCatService = new EventCatService(); //Esto lo dejamos asi??????
+const pagination = new Pagination();
 
 
 router.get("/", AuthMiddleware, async (req, res) => {
-    const limit = req.query.limit;
-    const offset = req.query.offset;  
-    console.log("limit: ", limit, "y offset: ", offset)
-
+    const limit = pagination.parseLimit(req.query.limit);
+    const offset = pagination.parseOffset(req.query.offset);
+    const basePath = "api/event-category"
+    console.log("El path: ", req.path);
+  
     try {
-      const evento = await eventCatService.getAllEventsCat(limit, offset);
+      const eventos = await eventCatService.getAllEventsCat(limit, offset);
       console.log("Estoy en GET evento-category-controller");
-      return res.status(200).json(evento);
+      const total = eventos.pagination.total;
+      const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
+      return res.status(200).json({
+        eventos: eventos.collection,
+        paginacion: paginatedResponse
+      });
     } catch (error) {
-      console.error("Error al obtener todas las categorias de eventos", error);
+      console.error("Error al obtener todas las categorías de eventos", error);
       return res.status(500).json({ error: "Ha ocurrido un error" });
     }
   });
-
 
 router.get("/:id", async (req, res) => {
     try {

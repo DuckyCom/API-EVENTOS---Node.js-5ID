@@ -10,7 +10,6 @@ export class PaginationDto {
     this.total = total;
   }
 }
-
 export class Pagination {
   constructor() {
     this.limitRegex = /limit=\d+/;
@@ -25,17 +24,17 @@ export class Pagination {
     return !isNaN(parseInt(offset)) ? parseInt(offset) : 0;
   }
 
-  buildPaginationDto(limit, currentOffset, total, path) {
+  buildPaginationDto(limit, currentOffset, total, path, basePath) {
     const nextPage =
       limit !== -1 && limit + currentOffset < total
-        ? this.buildNextPage(path, limit, currentOffset)
+        ? this.buildNextPage(path, limit, currentOffset, basePath)
         : null;
 
     return new PaginationDto(limit, currentOffset, nextPage, total);
   }
 
-  buildNextPage(path, limit, currentOffset) {
-    let url = BASE_URL + path;
+  buildNextPage(path, limit, currentOffset, basePath) {
+    let url = BASE_URL + basePath + path;
 
     url = this.limitRegex.test(url)
       ? url.replace(this.limitRegex, `limit=${limit}`)

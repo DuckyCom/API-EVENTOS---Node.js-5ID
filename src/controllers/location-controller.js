@@ -40,9 +40,7 @@ router.get("/:id/event-location", async (req, res) => {
         return res.status(200).json(events);
     } catch (error) {
         console.log("Error al buscar");
-        if(error === "Unauthorized"){
-            return res.status(401).json("User not Autenticated");
-        } else if(error === "not found"){
+         if(error === "not found"){
             return res.status(400).json("Not Found");
         } else{
             return res.json("Hubo un Error");

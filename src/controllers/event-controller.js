@@ -1,28 +1,35 @@
 import express, { Router, json, query } from "express";
 import { EventService } from "../service/event-service.js";
 import { AuthMiddleware } from "../auth/AuthMiddleware.js";
+import { Pagination } from "../utils/paginacion.js";
+
 // import { EventRepository } from "../repositories/event-respository.js";
 const router = express.Router();
 const eventService = new EventService();
-
+const pagination = new Pagination();
 
 // PUNTO 2 Y 3: LISTADO Y BUSQUEDA DE UN EVENTO
 //100% CONFIRMADO QUE NAME Y STARTDATE FUCNIONAN, FALTA ARREGLAR CATEGORY Y TAG
 router.get("/", async (req, res) => {
-    const pageSize = req.query.pageSize;
-    const page = req.query.page;
+    const limit = pagination.parseLimit(req.query.limit);
+    const offset = pagination.parseOffset(req.query.offset);
+    const basePath = "api/event"
     const tag = req.query.tag;
     const startDate = req.query.startDate;
     const name = req.query.name;
     const category = req.query.category;
-    
+
     try {
-        const events = await eventService.getEventsByFilters(name, category, startDate, tag, pageSize, page);
-        // console.log("Eventos en evento-controller: ", events);
-        return res.json(events);
+        const events = await eventService.getEventsByFilters(name, category, startDate, tag, limit, offset);
+        const total = events.length;  // Aquí suponemos que `events` contiene todos los eventos encontrados
+        const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
+        return res.status(200).json({
+            eventos: events,
+            paginacion: paginatedResponse
+        });
     } catch (error) {
-        console.log("Error al buscar");
-        return res.json("Un Error");
+        console.log("Error al buscar eventos:", error);
+        return res.status(500).json({ error: "Un Error ha ocurrido" });
     }
 });
  
@@ -137,7 +144,10 @@ router.put("/:id", AuthMiddleware , async (req, res) => {
 
     try {
         const evento = await eventService.updateEvent(id, name, description, start_date, end_date, category, capacity, location, image, tag, price, user_id);
-        return res.json(evento);
+        if(evento){
+            return res.status(200).json({ Message: 'Actualizado correctamente' });
+        }
+        
     }
     catch(error){
         console.log("Error al editar evento");

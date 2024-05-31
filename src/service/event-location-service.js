@@ -20,4 +20,15 @@ export class EventLocationService{
         return location;
     }
 
+    async putEventLocation(id, id_location, name, full_address, max_capacity, latitude, longitude,id_user){
+        console.log("ESTOY EN EVENT-LOCATION-SERVICE");
+        const eventLocationRepository = new EventLocationRepository();
+        return await eventLocationRepository.putEventLocation(id, id_location, name, full_address, max_capacity, latitude, longitude, id_user);
+    }
+
+    async deleteEventLocation(id,id_user){
+        const eventLocationRepository = new EventLocationRepository();
+        return await eventLocationRepository.deleteEventLocation(id,id_user);
+    }
+
 }
