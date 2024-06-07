@@ -81,9 +81,9 @@ export class EventService {
     const resultadoGet = await eventRepository.getParticipantesEvento(id, queryPrimero, array);
     return resultadoGet;
   }
-  postInscripcionEvento(id, id_user){
+  postInscripcionEvento(id_user, id_event){
     const eventRepository = new EventRepository();
-    const resultadoPost = eventRepository.postInscripcionEvento(id, id_user);
+    const resultadoPost = eventRepository.postInscripcionEvento(id_user, id_event);
     return resultadoPost;
   }
 
@@ -144,7 +144,7 @@ export class EventService {
   async updateEvent(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user){
     let updateEvent = null;
     const query = {
-        text: 'UPDATE events SET name = $1, description = $2, id_event_category = $3, id_event_location = $4, start_date = $5, duration_in_minutes = $6, price = $7, enabled_for_enrollment = $8, max_assistance = $9, id_creator_user = $10 WHERE id = $11 RETURNING *',
+        text: "UPDATE events SET name = $1, description = $2, id_event_category = $3, id_event_location = $4, start_date = $5, duration_in_minutes = $6, price = $7, enabled_for_enrollment = $8, max_assistance = $9, id_creator_user = $10 WHERE id = $11 RETURNING *",
         values: [name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user, id],
     };
     try {

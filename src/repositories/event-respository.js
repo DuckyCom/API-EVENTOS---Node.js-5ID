@@ -13,10 +13,10 @@ const respuesta = await client.query(sql);
 //tercera parte de la travesia, aquí se ingresa la query y se obtiene la respuesta en rows
 export class EventRepository{
       async getEventsByFilters(name, category, startDate, tag, limit, offset) {
-        console.log("Tag: ", tag)
-        console.log("Category:", category)
-        console.log("Name: ", name)
-        console.log("startDate: ", startDate)
+        // console.log("Tag: ", tag)
+        // console.log("Category:", category)
+        // console.log("Name: ", name)
+        // console.log("startDate: ", startDate)
 
 
            let sqlQuery = "SELECT * FROM events WHERE 1=1";
@@ -62,10 +62,10 @@ export class EventRepository{
  }
 
  async getAllEventsUnconfirmedName(name, category, startDate, tag, limit, offset) {
-    console.log("Tag: ", tag)
-    console.log("Category:", category)
-    console.log("Name: ", name)
-    console.log("startDate: ", startDate)
+    // console.log("Tag: ", tag)
+    // console.log("Category:", category)
+    // console.log("Name: ", name)
+    // console.log("startDate: ", startDate)
 
 
        let sqlQuery = "SELECT * FROM events WHERE 1=1";
@@ -134,24 +134,21 @@ throw new Error('Error al obtener eventos por filtros');
         }
         return obtenerEventosParticipantes;
     }
-    async postInscripcionEvento(id_event,id_user) { 
+    async postInscripcionEvento(id_user,id_event) { 
         let inscipcionEvento;
         const query = {
-            text: `INSERT INTO event_enrollments(id_event,id_user,registration_date_time) VALUES ($1, $2) `,
+            text: `INSERT INTO event_enrollments(id_event,id_user) VALUES ($1, $2) `,
             values: [id_event, id_user],
         }
         try{
+            console.log(id_event)
             const result = await client.query(query);
             inscipcionEvento = result.rows[0];
             console.log('Usuario Inscripto', inscipcionEvento);
         } catch(error){
             console.error('Error al insertar usuario:', error)
         }
-        if(!inscipcionEvento){
-            throw new Error('Not Found')
-        } 
-        const values = client.query(sqlQuery, vectorValores);
-        return values;
+        return inscipcionEvento;
     }
     async patchEnrollment(rating, description, attended, observation, id_event, id_user) {
         const existe = await client.query((`SELECT ee.id, e.start_date FROM event_enrollments ee INNER JOIN events e ON ee.id_event = e.id_event WHERE ee.id_event =${id_event} AND ee.id_user = ${id_user}`));

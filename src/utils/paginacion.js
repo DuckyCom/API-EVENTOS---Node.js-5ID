@@ -33,14 +33,14 @@ export class Pagination {
     const nextPage =
       limit !== -1 && limit + currentOffset < total
         ? this.buildNextPage(path, limit, currentOffset, basePath) : null;
-    console.log("Llego aca??????");
+    // console.log("Llego aca??????");
     return new PaginationDto(limit, currentOffset, nextPage, total);
   }
 
   buildNextPage(path, limit, currentOffset, basePath) {
     let url = BASE_URL + basePath + path;
-    console.log("Base", BASE_URL)
-    console.log("url", url)
+    // console.log("Base", BASE_URL)
+    // console.log("url", url)
     url = this.limitRegex.test(url)
       ? url.replace(this.limitRegex, `limit=${limit}`)
       : `${url}${url.includes("?") ? "&" : "?"}limit=${limit}`;

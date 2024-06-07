@@ -141,24 +141,36 @@ router.post("/", AuthMiddleware ,async (req, res) => {
     "enabled_for_enrollment": true,
     "max_assistance": 90000,
 }
+
+{
+    "name": "Harry Styles",
+    "description": "Un concierto muy STYLE",
+    "id_event_category": 1,
+    "id_event_location": 1,
+    "start_date": "2022/12/03 t 00:00:00" ,
+    "duration_in_minutes": 210,
+    "price": 17500,
+    "enabled_for_enrollment": true,
+    "max_assistance": 90000
+}
 */
 router.put("/:id", AuthMiddleware , async (req, res) => {
     const id = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
     const start_date = req.body.start_date; // DE ACA LO UNICO QUE NO NOS ANDA ES EL TEMA DEL STARTDATE A LA HORA DE POSTMAN. YA QUE MANDA QUE NO DEJA TIPO INTEGER.
-    const end_date = req.body.end_date;
-    const category = req.body.category;
-    const capacity = req.body.capacity;
-    const location = req.body.location;
-    const image = req.body.image;
-    const tag = req.body.tag;
+    const duration_in_minutes = req.body.duration_in_minutes;
+    const id_event_category = req.body.id_event_category;
+    const id_event_location = req.body.id_event_location;
     const price = req.body.price;
-    const user_id = req.user.id;
+    const max_assistance = req.body.max_assistance;
+    const enabled_for_enrollment = req.body.enabled_for_enrollment;
+    const id_creator_user = req.user.id;
 // const elEvento = req.body; POLSHU RECOMIENDA HACER UNA CLASE DE EVENTO QUE CONTENGA TODO LO DE ARRIBA, YO TAMBIEN LO PIENSO, PERO NO HAY TIEMPO AHORA PARA HACERLO. LO HACEMOS EN LA SEGUNDA ENTREGA :)
 
     try {
-        const evento = await eventService.updateEvent(id, name, description, start_date, end_date, category, capacity, location, image, tag, price, user_id);
+        console.log(start_date)
+        const evento = await eventService.updateEvent(id, name, description, id_event_category, id_event_location, start_date, duration_in_minutes, price, enabled_for_enrollment, max_assistance, id_creator_user);
         if(evento){
             return res.status(200).json({ Message: 'Actualizado correctamente' });
         }
@@ -198,10 +210,10 @@ router.delete("/:id", AuthMiddleware , async (req, res) => {
 // PUNTO 9: INSCRIPCION DE UN PARTICIPANTE A UN EVENTO
 
 router.post("/:id/enrollment", AuthMiddleware ,(req, res) => {
-    const id_user = req.user.id;
-    const id_event = req.params.id;
+    const id_user = req.user.id_user;
+    const id_event = req.params.id_event;
     try {
-        const event = eventService.postInscripcionEvento(id_event, id_user);
+        const event = eventService.postInscripcionEvento(id_user, id_event);
         if(!event){
             return res.status(400).json({ error: 'El formato de attended no es valido' });
         } else{
