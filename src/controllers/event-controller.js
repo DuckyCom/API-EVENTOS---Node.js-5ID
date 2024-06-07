@@ -9,20 +9,27 @@ const eventService = new EventService();
 const pagination = new Pagination();
 
 // PUNTO 2 Y 3: LISTADO Y BUSQUEDA DE UN EVENTO
-//100% CONFIRMADO QUE NAME Y STARTDATE FUCNIONAN, FALTA ARREGLAR CATEGORY Y TAG
+// VERIFICAR SI ES QUE FALTA ARREGLAR CATEGORY Y TAG
 router.get("/", async (req, res) => {
     const limit = pagination.parseLimit(req.query.limit);
     const offset = pagination.parseOffset(req.query.offset);
     const basePath = "api/event"
     const tag = req.query.tag;
     const startDate = req.query.startDate;
-    const name = req.query.name;
+    let name = req.query.name;
     const category = req.query.category;
 
+    if (name) {
+        name = name.trim();
+    }
+
     try {
+        // console.log("Estoy antes del getEventsByFilters");
         const events = await eventService.getEventsByFilters(name, category, startDate, tag, limit, offset);
-        const total = events.length;  // Aquí suponemos que `events` contiene todos los eventos encontrados
+        const total = await eventService.getAllEventsUnconfirmedName(name, category, startDate, tag);  // Aquí `total` contiene todos los eventos que matchean con los filtros, sin importar el límite y el offset.
+        // console.log("Estoy despues del getEventsByFilters");
         const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
+        // console.log("Estoy despues del buildPaginationDto");
         return res.status(200).json({
             eventos: events,
             paginacion: paginatedResponse
@@ -38,6 +45,12 @@ router.get("/:id", async (req, res) => {
     
     try {
         const evento = await eventService.getEventById(req.params.id);
+        if (!evento) {
+            return res.status(404).json({ error: 'Evento no encontrado' });
+        }
+        else{
+            return res.status(200).json({ Evento: evento });
+        }
         //Para comprobar si funciona el evento
         // console.log("evento en evento-controller: ", evento);
         return res.json(evento);
@@ -51,14 +64,16 @@ router.get("/:id", async (req, res) => {
 
 // PUNTO 5: LISTADO DE PARTICIPANTES DE UN EVENTO.
 
-router.get("/:id/enrollment", (req, res) => {
+router.get("/:id/enrollment", async (req, res) => {
     const first_name = req.query.first_name;
     const last_name = req.query.last_name;
     const userName = req.query.userName;
     const attended = req.query.attended;
     const rating = req.query.rating;
+    console.log("controller")
     try {
-        const participantesEvento = eventService.getParticipantesEvento(req.params.id, first_name, last_name, userName, attended, rating);
+        const participantesEvento = await eventService.getParticipantesEvento(req.params.id, first_name, last_name, userName, attended, rating);
+        
         if(!participantesEvento){
             return res.status(400).json({ error: 'El formato de attended no es valido' });
         }

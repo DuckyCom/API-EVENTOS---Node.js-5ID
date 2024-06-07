@@ -50,34 +50,89 @@ export class EventRepository{
             sqlQuery += ` LIMIT ${limit} OFFSET ${offset}`;
     try {
     const { rows } = await client.query(sqlQuery);
+
+    //falta if de si no hay nada
+
+
     return rows;
     } catch (error) {
     console.error("Error al ejecutar la consulta SQL:", error);
     throw new Error('Error al obtener eventos por filtros');
     }
  }
+
+ async getAllEventsUnconfirmedName(name, category, startDate, tag, limit, offset) {
+    console.log("Tag: ", tag)
+    console.log("Category:", category)
+    console.log("Name: ", name)
+    console.log("startDate: ", startDate)
+
+
+       let sqlQuery = "SELECT * FROM events WHERE 1=1";
+       
+       if (name) {
+           sqlQuery += ` AND "name" LIKE '%${name}%'`;
+        }
+       if (category) {
+           const categoryIdQuery = `SELECT id FROM event_categories WHERE "name" = '${category}'`;
+           const { rows: categoryRows } = await client.query(categoryIdQuery);
+           const categoryId = categoryRows[0]?.id;
+           console.log(categoryId);
+           if (categoryId) {
+                console.log("SOY UNA CATEGORIA Y EXISTO")
+               sqlQuery += ` AND id_event_category = '${categoryId}'`;
+           }
+       }
+      if (startDate) {
+           sqlQuery += ` AND start_date::date = '${startDate}'::date`;
+       }
+       if (tag) {
+        const tagIdQuery = `SELECT id FROM tags WHERE "name" = '${tag}'`;
+           const { rows: tagRows } = await client.query(tagIdQuery);
+           const tagId = tagRows[0]?.id;
+          if (tagId) {
+                sqlQuery += ` AND id IN (SELECT id_event FROM event_tags WHERE id_tag = '${tagId}')`;
+            }
+        }
+
+try {
+const { rows } = await client.query(sqlQuery);
+const length = rows.length;
+console.log("length", length);
+return length;
+} catch (error) {
+console.error("Error al ejecutar la consulta SQL:", error);
+throw new Error('Error al obtener eventos por filtros');
+}
+}
     
     
     
     
     
     
-   async getEventById(id) {
-        var sqlQuery = `SELECT * FROM events WHERE id = ${id}`;
-        const values = client.query(sqlQuery);
-        console.log(values);
-        return values;
-    }
-    async getParticipantesEvento(id, queryPrimero) {
-        var sqlQuery = `SELECT er.*,u.first_name,u.last_name,u.username,e.name FROM event_enrollments er
-        LEFT JOIN users u ON er.id_user = u.id
-        LEFT JOIN events e ON er.id_event = e.id 
-		LEFT JOIN event_tags et ON e.id = et.id_event
-        LEFT JOIN tags ON et.id = tags.id
-        WHERE e.id = ${id} + queryPrimero`;
-        const values = client.query(sqlQuery);
-        console.log(values);
-        return values;
+//    async getEventById(id) {
+//         var sqlQuery = `SELECT * FROM events WHERE id = ${id}`;
+//         const values = client.query(sqlQuery);
+//         console.log(values);
+//         return values;
+//     }
+    async getParticipantesEvento(id, queryPrimero, arrayParams) {
+        let obtenerEventosParticipantes;
+        const sqlQuery = {
+            text: 'SELECT er.*,u.first_name,u.last_name,u.username,e.name FROM event_enrollments er LEFT JOIN users u ON er.id_user = u.id LEFT JOIN events e ON er.id_event = e.id LEFT JOIN event_tags et ON e.id = et.id_event LEFT JOIN tags ON et.id = tags.id WHERE e.id = $1' + queryPrimero, 
+            values: [id].concat(arrayParams)
+            // [id, first_name, last_name]
+        };
+        try{
+            const result = await client.query(sqlQuery);
+            // const result = await client.query(sqlQuery);
+            obtenerEventosParticipantes = result.rows[0];
+            console.log(obtenerEventosParticipantes);
+        } catch (error){
+            console.error("error al obtener", error)
+        }
+        return obtenerEventosParticipantes;
     }
     async postInscripcionEvento(id_event,id_user) { 
         let inscipcionEvento;

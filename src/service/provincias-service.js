@@ -21,7 +21,7 @@ export class ProvinciasService {
             text: 'SELECT * FROM provinces WHERE id = $1',
             values: [id]
           };
-          const result = await this.client.query(query);
+          const result = await client.query(query);
           returnEntity = result.rows[0]; //no hace falta el "[]"?
           console.log(result);
         } catch (error) {

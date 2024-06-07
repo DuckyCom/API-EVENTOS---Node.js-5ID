@@ -38,29 +38,47 @@ export class EventService {
   }
   
 
+  
+  async getAllEventsUnconfirmedName(name, category, startDate, tag) {
+    try {
+      const eventRepository = new EventRepository();
+      const events = await eventRepository.getAllEventsUnconfirmedName(name, category, startDate, tag);
+      return events;
+  } catch (error) {
+      console.error("Error en getEventsByFilters de EventService:", error);
+      throw new Error('Error al obtener eventos por filtros');
+  }
+}
 
-  getParticipantesEvento(id, first_name, last_name, userName, attended, rating){
-    if(attended || !attended) {
+
+  async getParticipantesEvento(id, first_name, last_name, userName, attended, rating){
+    if(attended) {
         return false;
     }
-    var queryPrimero = "";
+    let queryPrimero = "";
+    const array = []
     if(first_name){
-      queryPrimero += ` AND users.first_name = ${first_name}`;
+      queryPrimero +=  " AND u.first_name = $2";
+      array.push(first_name)
     }    
     if(last_name){
-      queryPrimero += ` AND users.last_name = ${last_name}`;
+      queryPrimero += " AND u.last_name = $3";
+      array.push(last_name)
     }
     if(userName){
-      queryPrimero += ` AND users.username = ${userName}`;
+      queryPrimero += " AND u.username = $4";
+      array.push(userName)
     }
     if(attended){
-      queryPrimero += ` AND event_enrollments.attended = ${attended}`;
+      queryPrimero += " AND er.attended = $5";
+      array.push(attended)
     }    
     if(rating){
-      queryPrimero += ` AND event_enrollments.rating >= ${rating}`;
+      queryPrimero += " AND er.rating >= $6";
+      array.push(rating)
     }
     const eventRepository = new EventRepository();
-    const resultadoGet =  eventRepository.getParticipantesEvento(id, queryPrimero);
+    const resultadoGet = await eventRepository.getParticipantesEvento(id, queryPrimero, array);
     return resultadoGet;
   }
   postInscripcionEvento(id, id_user){
