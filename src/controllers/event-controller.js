@@ -209,27 +209,52 @@ router.delete("/:id", AuthMiddleware , async (req, res) => {
 
 // PUNTO 9: INSCRIPCION DE UN PARTICIPANTE A UN EVENTO
 
-router.post("/:id/enrollment", AuthMiddleware ,(req, res) => {
-    const id_user = req.user.id_user;
-    const id_event = req.params.id_event;
-    try {
-        const event = eventService.postInscripcionEvento(id_user, id_event);
-        if(!event){
-            return res.status(400).json({ error: 'El formato de attended no es valido' });
-        } else{
-            return res.json("Se ha inscripto correctamente al evento");
-        }
-    }
-    catch(error){
-        if(error.message === 'Not Found'){
-            res.status(404).json({message:error.message})
-        } else{
-            res.status(400).json("Un Error");
+router.post("/:id/enrollment", AuthMiddleware, async (req, res) => {
+    const id_user = req.user.id;
+    const id_event = req.params.id;
 
+    try {
+        // Verificar si el evento existe
+        const event = await eventService.getEventById(id_event);
+        if (!event) {
+            return res.status(404).json({ error: 'Evento no encontrado' });
         }
-        console.log("Error al inscribir");
+
+        // Verificar si el evento está habilitado para inscripción
+        if (!event.enabled_for_enrollment) {
+            return res.status(400).json({ error: 'El evento no está habilitado para inscripción' });
+        }
+
+        // Verificar si el evento ha alcanzado la capacidad máxima
+        if (event.current_attendance >= event.max_assistance) {
+            return res.status(400).json({ error: 'El evento ha alcanzado la capacidad máxima' });
+        }
+
+        // // Verificar si el evento ya ocurrió o es hoy
+        // const today = new Date();
+        // if (event.start_date <= today) {
+        //     return res.status(400).json({ error: 'El evento ya ha ocurrido o es hoy' });
+        // }
+
+        // Verificar si el usuario ya está inscrito en el evento
+        const isEnrolled = await eventService.isUserEnrolled(id_user, id_event);
+        if (isEnrolled) {
+            return res.status(400).json({ error: 'El usuario ya está inscrito en el evento' });
+        }
+
+        // Si todas las verificaciones pasan, proceder con la inscripción
+        await eventService.postInscripcionEvento(id_user, id_event);
+        return res.status(201).json({ message: 'Usuario inscrito exitosamente' });
+
+    } catch (error) {
+        if (error.message === 'Not Found') {
+            return res.status(404).json({ message: 'Evento no encontrado' });
+        } else {
+            return res.status(400).json({ error: 'Solicitud incorrecta', message: error.message });
+        }
     }
 });
+
 
 // SOLUCIONAR MAS TARDE ESTE DELETE.
 
@@ -239,40 +264,78 @@ router.delete("/:id/enrollment", AuthMiddleware ,async (req, res) => {
     try{
         const event = await eventService.deleteInscripcionEvento(id_event, id_user);
         if(!event){
-            return res.status(400).json({ error: 'El formato de attended no es valido' });
+            return res.status(404).json({ error: 'El id de evento en event enrollment no existe' });
         } else{
             return res.json("Se ha desinscripto correctamente al evento");
         }
     } catch(error){
-        if(error.message === 'Not Found'){
-            res.status(404).json({message:error.message})
-        } else{
-            res.status(400).json("Un Error");
-
-        }
+        return res.status(400).json({error: "El usuario no se encuentra registrado o se esta intentando borrar algo que es hoy o ya sucedió"})
         console.log("Error al desinscribir");
     }
 });
 
 /* PUNTO 10: Rating de un Evento */
-router.patch("/:id/enrollment", (req, res) => {
-    if(!Number.isInteger(Number(req.body.rating))&& Number.isInteger(Number(req.body.attended))){
-        return res.status(400).json({ error: 'El formato de attended no es valido' });
+// router.patch("/:id/enrollment", AuthMiddleware, async (req, res) => {
+//     if(!Number.isInteger(Number(req.body.rating))&& Number.isInteger(Number(req.body.attended))){
+//         return res.status(400).json({ error: 'El formato de attended no es valido' });
+//     }
+//     const rating = req.body.rating;
+//     const descripcion = req.body.description;
+//     const attended = req.body.attended;
+//     const observation = req.body.observation;
+//     try {
+//         const enrollment = await eventService.patchEnrollment(rating, descripcion, attended, observation);
+//         return res.json(enrollment);
+//     }
+//     catch(error){
+//         console.log("Error al puntuar");
+//         return res.json("Un Error");
+//     }
+// });
+
+
+// IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE
+// esto de aca abajo es de CHATGPT ya que lo de arriba era lo nuestro y no andaba una cosita, por lo tanto FIJARSE PORQUE CUANDO PONEMOS: http://localhost:7777/api/event/3/enrollment/5 MANDA: 
+//{
+//    "error": "El rating debe ser un entero entre 1 y 10"
+//}
+router.patch("/:id/enrollment/:enrollment_id", AuthMiddleware, async (req, res) => {
+    // Obtener los parámetros y el cuerpo del request
+    const id = req.user.id;
+    const enrollment_id = req.params.id
+    const { rating, observations } = req.body;
+    const userId = req.user.id;  // Suponiendo que el ID del usuario autenticado se guarda en req.user.id
+
+    // Validar que el rating es un entero entre 1 y 10
+    if (typeof rating !== 'number' || !Number.isInteger(rating) || rating < 1 || rating > 10) {
+        return res.status(400).json({ error: 'El rating debe ser un entero entre 1 y 10' });
     }
-    const rating = req.body.rating;
-    const descripcion = req.body.description;
-    const attended = req.body.attended;
-    const observation = req.body.observation;
+
     try {
-        const enrollment = eventService.patchEnrollment(rating, descripcion, attended, observation);
-        return res.json(enrollment);
-    }
-    catch(error){
-        console.log("Error al puntuar");
-        return res.json("Un Error");
+        // Verificar si el usuario está registrado en el evento y si el evento ya ha finalizado
+        const eventEnrollment = await eventService.getEventEnrollment(id, enrollment_id, userId);
+        if (!eventEnrollment) {
+            return res.status(404).json({ error: 'Inscripción no encontrada' });
+        }
+
+        const { start_date } = eventEnrollment;
+        const hoy = new Date();
+        if (new Date(start_date) > hoy) {
+            return res.status(400).json({ error: 'El evento aún no ha finalizado' });
+        }
+
+        // Actualizar la inscripción
+        const updatedEnrollment = await eventService.updateEventEnrollment(enrollment_id, rating, observations);
+        return res.status(200).json(updatedEnrollment);
+    } catch (error) {
+        // Manejar errores y retornar una respuesta adecuada
+        if (error.message === 'Usuario no autenticado') {
+            return res.status(401).json({ error: 'Usuario no autenticado' });
+        }
+        console.error('Error al actualizar la inscripción:', error);
+        return res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
-
 
 
 

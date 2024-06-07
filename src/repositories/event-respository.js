@@ -143,13 +143,32 @@ throw new Error('Error al obtener eventos por filtros');
         try{
             console.log(id_event)
             const result = await client.query(query);
-            inscipcionEvento = result.rows[0];
-            console.log('Usuario Inscripto', inscipcionEvento);
+            inscipcionEvento = result.rows[0]; //a saber si es necesario que sea undefined o no pero funciona ;) [tenemos muchas verificaciones como para que no funcione]
+            console.log('Usuario Inscripto');
         } catch(error){
             console.error('Error al insertar usuario:', error)
         }
         return inscipcionEvento;
     }
+    
+
+    async isUserEnrolled(id_user, id_event) { 
+        let isEnrolled = false;
+        const query = {
+            text: `SELECT COUNT(*) FROM event_enrollments WHERE id_user = $1 AND id_event = $2`,
+            values: [id_user, id_event],
+        }
+        try {
+            const result = await client.query(query);
+            const count = parseInt(result.rows[0].count);
+            isEnrolled = count > 0;
+        } catch(error) {
+            console.error('Error al verificar inscripción del usuario:', error);
+            throw error;
+        }
+        return isEnrolled;
+    }
+
     async patchEnrollment(rating, description, attended, observation, id_event, id_user) {
         const existe = await client.query((`SELECT ee.id, e.start_date FROM event_enrollments ee INNER JOIN events e ON ee.id_event = e.id_event WHERE ee.id_event =${id_event} AND ee.id_user = ${id_user}`));
         const hoy = new Date();

@@ -81,11 +81,17 @@ export class EventService {
     const resultadoGet = await eventRepository.getParticipantesEvento(id, queryPrimero, array);
     return resultadoGet;
   }
-  postInscripcionEvento(id_user, id_event){
+  async postInscripcionEvento(id_user, id_event){
     const eventRepository = new EventRepository();
-    const resultadoPost = eventRepository.postInscripcionEvento(id_user, id_event);
+    const resultadoPost = await eventRepository.postInscripcionEvento(id_user, id_event);
     return resultadoPost;
   }
+  
+  async isUserEnrolled(id_user, id_event) {
+    const eventRepository = new EventRepository();
+    const isEnrolled = await eventRepository.isUserEnrolled(id_user, id_event);
+    return isEnrolled;
+}
 
   async deleteInscripcionEvento(id_event, id_user){
     let deleteInscipt;
@@ -113,7 +119,7 @@ export class EventService {
       description: description,
     }
     const eventRepository = new EventRepository();
-    const enrollmentResultado = eventRepository.patchEnrollment(enrollment);
+    const enrollmentResultado = await eventRepository.patchEnrollment(enrollment);
     return enrollmentResultado;
   }
 
@@ -172,6 +178,30 @@ export class EventService {
     }
     return registrosAfectados;
   }
+
+
+
+  async getEventEnrollment(eventId, enrollmentId, userId) {
+    const query = `SELECT ee.id, e.start_date 
+                   FROM event_enrollments ee 
+                   INNER JOIN events e ON ee.id_event = e.id 
+                   WHERE ee.id_event = $1 AND ee.id_user = $2 AND ee.id = $3`;
+    const values = [eventId, userId, enrollmentId];
+    const result = await client.query(query, values);
+    return result.rows[0];
+}
+
+// Actualizar la inscripción al evento
+async updateEventEnrollment(enrollmentId, rating, observations) {
+    const query = `UPDATE event_enrollments 
+                   SET rating = $1, observations = $2 
+                   WHERE id = $3 
+                   RETURNING *`;
+    const values = [rating, observations, enrollmentId];
+    const result = await client.query(query, values);
+    return result.rows[0];
+}
+
 
 
 
