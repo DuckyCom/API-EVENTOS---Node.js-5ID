@@ -79,7 +79,7 @@ export class EventRepository{
            const categoryId = categoryRows[0]?.id;
            console.log(categoryId);
            if (categoryId) {
-                console.log("SOY UNA CATEGORIA Y EXISTO")
+                // console.log("SOY UNA CATEGORIA Y EXISTO")
                sqlQuery += ` AND id_event_category = '${categoryId}'`;
            }
        }

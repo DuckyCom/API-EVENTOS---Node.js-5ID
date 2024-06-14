@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
   try {
     const provincias = await provinciaService.findProvPaginated(limit, offset);
     const total = await provinciaService.getAllProvinces()
-    const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
+    const paginatedResponse = await pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
     // console.log(provincias);
     return res.status(200).json({
       provincias: provincias,

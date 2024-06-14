@@ -54,7 +54,7 @@ export class ProvinciasService {
 
     async getAllProvinces () {
    let returnEntity = null;
-      console.log("Estoy en: findProvPaginated");
+      console.log("Estoy en: getAllProvinces");
       try {
         const query = {
           text: 'SELECT * FROM provinces',

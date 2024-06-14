@@ -4,6 +4,7 @@ import pg from "pg";
 import { config } from "../repositories/db.js"; 
 import { Pagination } from "../utils/paginacion.js";
 const client = new pg.Client(config);
+const pagination = new Pagination(); // Crea una instancia de Pagination
 client.connect();
 
 export class LocationService{
@@ -16,10 +17,8 @@ export class LocationService{
             };
             const result = await client.query(query);
             console.log(result);
-            returnEntity = result.rows;
-            const limit = Pagination.ParseLimit(15);
-            const offset = Pagination.ParseOffset(0);
-            returnEntity = Pagination.BuildPagination(returnEntity, limit, offset, url, returnEntity.length);
+            const rows = result.rows;
+            returnEntity = rows.length
         } catch (error) {
             console.log(error);
         }
@@ -27,7 +26,7 @@ export class LocationService{
         return returnEntity;
     }
 
-    async getLocationById(id){
+    async getLocationById(id) {
         let returnEntity = null;
         console.log("Estoy en: getLocationById");
         try {
@@ -37,18 +36,34 @@ export class LocationService{
             };
             const result = await client.query(query);
             returnEntity = result.rows[0];
-            console.log(result);
+            // console.log(result);
         } catch (error) {
             console.log(error);
+            throw new Error("Error al buscar la ubicación");
         }
-        if(!returnEntity){
-            throw new Error("not found");
+        if (!returnEntity) {
+            throw new Error("location not found");
         }
         return returnEntity;
     }
 
-    async getEventsLocationByLocations(id){
-        
+    async getEventsLocationByLocations(id, user_id) {
+        let returnEntity = null;
+        try {
+            const query = {
+                text: 'SELECT * FROM event_locations WHERE id = $1 AND id_creator_user = $2',
+                values: [id, user_id]
+            };
+            const result = await client.query(query);
+            returnEntity = result.rows;
+        } catch (error) {
+            console.log(error);
+            throw new Error("Error al buscar los eventos");
+        }
+        if (returnEntity.length === 0) {
+            throw new Error("events not found");
+        }
+        return returnEntity;
     }
 
     async findLocationsByProvince(id) {
@@ -86,4 +101,22 @@ export class LocationService{
       
         return deletedLocationNames; // Devuelve los nombres de las localidades eliminadas o null si no se encontraron
       }
+
+      async findLocationsPaginated(limit, offset){
+        let returnEntity = null;
+        try {
+          const query = {
+            text: 'SELECT * FROM locations LIMIT $1 OFFSET $2',
+            values: [limit, offset]
+          };
+          const result = await client.query(query);
+          //console.log(result);
+          returnEntity = result.rows; //este rows NO tiene que ir con 0, ya que debe tomar todos los valores
+          console.log(result);
+        } catch (error) {
+          console.log(error);
+        }
+        return returnEntity;
+    }
+
 }

@@ -1,12 +1,38 @@
 import express, { Router, json, query } from "express";
 import { EventLocationService } from "../service/event-location-service.js";
 import { AuthMiddleware } from "../auth/AuthMiddleware.js";
+import { Pagination } from "../utils/paginacion.js";
+
 const router = express.Router();
 const eventLocationService = new EventLocationService();
+const pagination = new Pagination();
+router.get("/", AuthMiddleware, async (req, res) => {
+    const limit = pagination.parseLimit(req.query.limit);
+    const offset = pagination.parseOffset(req.query.offset);
+    const basePath = "api/event-location";
+
+    try {
+        const locations = await eventLocationService.getAllLocationsPaginated(limit, offset);
+        const total = await eventLocationService.getLocationsCount(); // Get the count of all locations
+        
+        if (total != null) {
+            const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
+            return res.status(200).json({
+                locacion_de_eventos: locations,
+                paginacion: paginatedResponse
+            });
+        } else {
+            return res.status(404).json({ message: "No hay locaciones" });
+        }
+    } catch (error) {
+        console.error("Error al obtener la localización:", error);
+        return res.status(500).json("Ha ocurrido un error");
+    }
+});
+
+
 
 router.get("/:id", AuthMiddleware, async (req, res) => {
-
-    
     try {
         const location = await eventLocationService.findLocationByID(req.params.id);
         console.log("estoy en GET event-location-controller por id");
@@ -76,7 +102,7 @@ router.delete("/:id", AuthMiddleware, async (req,res) =>{
     try{
         const location = await eventLocationService.deleteEventLocation(id,id_user)
         if (location) {
-            return res.status(200).json(location);
+            return res.status(200).json({message: 'Eliminado correctamente'});
         } else {
             return res.status(404).json("No se ha encontrado la localización con el id proporcionado o el id de usuario no es el correcto ");
         }

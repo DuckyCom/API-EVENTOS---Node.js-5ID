@@ -9,6 +9,32 @@ client.connect();
 
 export class EventLocationRepository{
 
+    async getAllLocationsPaginated(limit, offset) {
+        try {
+            const query = {
+                text: "SELECT * FROM event_locations LIMIT $1 OFFSET $2",
+                values: [limit, offset]
+            };
+            const result = await client.query(query);
+            return result.rows;
+        } catch (error) {
+            console.error("Error en getAllLocationsPaginated:", error);
+            throw error;
+        }
+    }
+
+    async getLocationsCount() {
+        try {
+            const query = "SELECT COUNT(*) FROM event_locations";
+            const result = await client.query(query);
+            return parseInt(result.rows[0].count, 10); // Ensure the count is an integer
+        } catch (error) {
+            console.error("Error en getLocationsCount:", error);
+            throw error;
+        }
+    }
+
+
     async findLocationByID(id){
         let returnEntity = null;
         try {
@@ -82,7 +108,7 @@ export class EventLocationRepository{
             }
             const result = await client.query(query);
             returnEntity = result.rowCount;
-            // console.log(returnEntity)
+            console.log(returnEntity)
             // if (result.rowCount > 0) {
             //     console.log('Evento actualizado:', result.rows[0]);
             //     return result.rows[0];

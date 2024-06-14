@@ -12,23 +12,22 @@ const pagination = new Pagination();
 router.get("/", AuthMiddleware, async (req, res) => {
     const limit = pagination.parseLimit(req.query.limit);
     const offset = pagination.parseOffset(req.query.offset);
-    const basePath = "api/event-category"
-    console.log("El path: ", req.path);
-  
+    const basePath = "api/event-category";
+
     try {
       const eventos = await eventCatService.getAllEventsCat(limit, offset);
-      console.log("Estoy en GET evento-category-controller");
-      const total = eventos.pagination.total;
+      const total = eventos.total; // El total de eventos
       const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
       return res.status(200).json({
-        eventos: eventos.collection,
+        eventos: eventos.collection, // La colección de eventos
         paginacion: paginatedResponse
       });
     } catch (error) {
       console.error("Error al obtener todas las categorías de eventos", error);
       return res.status(500).json({ error: "Ha ocurrido un error" });
     }
-  });
+});
+
 
 router.get("/:id", async (req, res) => {
     try {
@@ -56,8 +55,8 @@ router.post("/", async (req, res) => {
     try {
         const nameCat = req.body.nameCat.trim();
         const display = req.body.display_order;
-        console.log(nameCat);
-        console.log(display);
+        console.log(nameCat, "holaaa");
+        console.log(display, "holaa");
 
         if (nameCat.length < 3 || nameCat === "") {
             return res.status(400).json(`El nombre: '${nameCat}' está vacío o tiene menos de tres (3) letras.`);
@@ -89,11 +88,9 @@ router.put("/", async (req, res) => {
         }
         
         const evento = await eventCatService.updateEventCategory(id, nameCat, display);
-        //Para comprobar si funciona el evento
-        console.log("estoy en POST evento-category-controller");
+        console.log("estoy en PUT evento-category-controller");
 
-        if (evento === null)
-        {
+        if (evento) {
             const response = {
                 message: "Evento actualizado con éxito",
                 name: nameCat,
@@ -101,15 +98,11 @@ router.put("/", async (req, res) => {
                 id: id
             };
             return res.status(200).json(response);
-        }
-        else
-        {
+        } else {
             return res.status(404).json(`ERROR 404: {id: ${id}} not found`);
-
-        }        
-    }
-    catch(error){
-        console.log("Error al crear la categoria de evento");
+        }
+    } catch (error) {
+        console.log("Error al actualizar la categoría de evento", error);
         return res.status(500).json("Ha ocurrido un error");
     }
 });
@@ -122,25 +115,20 @@ router.delete("/:id", async (req, res) => {
         const id = req.params.id;
         console.log(id);
         const evento = await eventCatService.deleteEventCategory(id);
-        //Para comprobar si funciona el evento
         console.log("estoy en DELETE evento-category-controller");
         console.log(evento);
 
-        if (evento != null)
-        {
-            return res.status(200).json("evento eliminado con éxito: ", evento);
-        }
-        else
-        {
+        if (evento != null) {
+            return res.status(200).json({ message: "Evento eliminado con éxito", evento: evento });
+        } else {
             return res.status(404).json(`ERROR 404: {id: ${id}} not found`);
-
         }        
-    }
-    catch(error){
-        console.log("Error al crear la categoria de evento");
+    } catch (error) {
+        console.log("Error al eliminar la categoría de evento", error);
         return res.status(500).json("Ha ocurrido un error");
     }
 });
+
 
 
 

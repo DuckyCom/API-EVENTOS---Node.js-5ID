@@ -8,6 +8,17 @@ client.connect();
 
 export class EventLocationService{
 
+    async getAllLocationsPaginated(limit, offset) {
+        const eventLocationRepository = new EventLocationRepository();
+        return await eventLocationRepository.getAllLocationsPaginated(limit, offset);
+    }
+
+    async getLocationsCount() {
+        const eventLocationRepository = new EventLocationRepository();
+        return await eventLocationRepository.getLocationsCount();
+    }
+
+
     async findLocationByID(id){
         const eventLocationRepository = new EventLocationRepository();
         const location = await eventLocationRepository.findLocationByID(id);

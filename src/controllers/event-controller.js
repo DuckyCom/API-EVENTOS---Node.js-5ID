@@ -299,11 +299,15 @@ router.delete("/:id/enrollment", AuthMiddleware ,async (req, res) => {
 //{
 //    "error": "El rating debe ser un entero entre 1 y 10"
 //}
-router.patch("/:id/enrollment/:enrollment_id", AuthMiddleware, async (req, res) => {
+
+// IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2
+// ESTA MAL LO QUE ENVIAMOS POR PARAMETROS EN CADA ASYNC, tipo, en getEventEnrollment y UpdateEventEnrollment
+
+
+router.patch("/:id/enrollment/:entero", AuthMiddleware, async (req, res) => {
     // Obtener los parámetros y el cuerpo del request
-    const id = req.params.id;
-    const enrollment_id = req.params.enrollment_id;
-    const rating = req.params.rating;
+    const id = req.params.id; //id del evento
+    const rating = req.params.entero; //id del user
     const observations = req.body.observations;
     const userId = req.user.id;  // Suponiendo que el ID del usuario autenticado se guarda en req.user.id
 
@@ -311,6 +315,7 @@ router.patch("/:id/enrollment/:enrollment_id", AuthMiddleware, async (req, res) 
     if (rating < 1 || rating > 10) {
         return res.status(400).json({ error: 'El rating debe ser un entero entre 1 y 10' });
     }
+    
     try {
         // Verificar si el usuario está registrado en el evento y si el evento ya ha finalizado
         const eventEnrollment = await eventService.getEventEnrollment(id, userId);

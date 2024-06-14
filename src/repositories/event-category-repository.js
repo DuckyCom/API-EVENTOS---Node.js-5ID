@@ -5,60 +5,26 @@ const client = new pg.Client(config);
 client.connect();
 
 export class EventCatRepository {
-    async getEventsByFilters(name, category, startDate, tag, limit, offset) {
-        console.log("Tag: ", tag);
-        console.log("Category:", category);
-        console.log("Name: ", name);
-        console.log("startDate: ", startDate);
-
-        let sqlQuery = "SELECT * FROM events WHERE 1=1";
-        const queryParams = [];
-
-        if (name) {
-            sqlQuery += ` AND "name" ILIKE $${queryParams.length + 1}`;
-            queryParams.push(`%${name}%`);
-        }
-
-        if (category) {
-            const categoryIdQuery = `SELECT id FROM event_categories WHERE "name" = $1`;
-            const { rows: categoryRows } = await client.query(categoryIdQuery, [category]);
-            const categoryId = categoryRows[0]?.id;
-            if (categoryId) {
-                console.log("SOY UNA CATEGORIA Y EXISTO");
-                sqlQuery += ` AND id_event_category = $${queryParams.length + 1}`;
-                queryParams.push(categoryId);
-            }
-        }
-
-        if (startDate) {
-            sqlQuery += ` AND start_date::date = $${queryParams.length + 1}`;
-            queryParams.push(startDate);
-        }
-
-        if (tag) {
-            const tagIdQuery = `SELECT id FROM tags WHERE "name" = $1`;
-            const { rows: tagRows } = await client.query(tagIdQuery, [tag]);
-            const tagId = tagRows[0]?.id;
-            if (tagId) {
-                sqlQuery += ` AND id IN (SELECT id_event FROM event_tags WHERE id_tag = $${queryParams.length + 1})`;
-                queryParams.push(tagId);
-            }
-        }
-
-        // Agregar paginación utilizando limit y offset
-        sqlQuery += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
-        queryParams.push(limit, offset);
-
-        try {
-            const { rows } = await client.query(sqlQuery, queryParams);
-            return rows;
-        } catch (error) {
-            console.error("Error al ejecutar la consulta SQL:", error);
-            throw new Error('Error al obtener eventos por filtros');
-        }
+  async getAllEventsCat(limit, offset) {
+    console.log("Estoy en event-category-repository");
+    try {
+        const query = {
+            text: 'SELECT * FROM event_categories LIMIT $1 OFFSET $2',
+            values: [limit, offset]
+        };
+        const result = await client.query(query);
+        const totalQuery = await client.query('SELECT COUNT(*) FROM event_categories');
+        const total = parseInt(totalQuery.rows[0].count); // El total de eventos
+        return {
+            collection: result.rows,
+            total: total
+        };
+    } catch (error) {
+        console.error("Error al obtener todas las categorías de eventos", error);
+        throw new Error('Error al obtener todas las categorías de eventos');
     }
-
-
+  }
+  
   async getEventsCatById(id) {
     try {
       console.log("Estoy en event-category-repository");
