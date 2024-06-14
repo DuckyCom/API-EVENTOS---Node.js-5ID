@@ -181,25 +181,35 @@ export class EventService {
 
 
 
-  async getEventEnrollment(eventId, enrollmentId, userId) {
-    const query = `SELECT ee.id, e.start_date 
-                   FROM event_enrollments ee 
-                   INNER JOIN events e ON ee.id_event = e.id 
-                   WHERE ee.id_event = $1 AND ee.id_user = $2 AND ee.id = $3`;
-    const values = [eventId, userId, enrollmentId];
-    const result = await client.query(query, values);
-    return result.rows[0];
-}
+  async getEventEnrollment(eventId, userId) {
+    let obtenerEnrollment = null;
+    const query = {
+      text:`SELECT ee.id, e.start_date FROM event_enrollments ee INNER JOIN events e ON ee.id_event = e.id WHERE ee.id_event = $1 AND ee.id_user = $2`,
+      values: [eventId, userId]
+    } 
+    try{
+      const result = await client.query(query);
+      obtenerEnrollment = result.rowCount[0];
+    } catch(error){
+      console.log("errorrrrr", error)
+    }
+    return obtenerEnrollment;  
+  }
 
 // Actualizar la inscripción al evento
 async updateEventEnrollment(enrollmentId, rating, observations) {
-    const query = `UPDATE event_enrollments 
-                   SET rating = $1, observations = $2 
-                   WHERE id = $3 
-                   RETURNING *`;
-    const values = [rating, observations, enrollmentId];
-    const result = await client.query(query, values);
-    return result.rows[0];
+  let updateEventEnrollment = null;  
+  const query = {
+    text: `UPDATE event_enrollments SET rating = $1, observations = $2 WHERE id = $3 RETURNING *`,
+    values: [rating, observations, enrollmentId]
+  };
+  try{
+    const result = await client.query(query);
+    updateEventEnrollment = result.rows[0];
+  } catch(error){
+    console.error('Error', error)
+  }
+  return updateEventEnrollment;
 }
 
 

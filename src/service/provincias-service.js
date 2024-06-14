@@ -3,9 +3,11 @@ import { query } from "express";
 import pg from "pg";
 import { config } from "../repositories/db.js"; 
 import { Pagination } from "../utils/paginacion.js";
-const sql = "SELECT * FROM provinces";
+import { LocationService} from "../service/location-service.js";
+
 const pagination = new Pagination();
 const client = new pg.Client(config);
+const locationService = new LocationService();
 client.connect();
 export class ProvinciasService {
     // constructor(){
@@ -86,25 +88,38 @@ export class ProvinciasService {
         return insertedProvince;
     }
 
-async deleteProvince(id){
+async deleteProvince(id) {
   let deletedProvince = null;
-  const query = {
-      text: 'DELETE FROM provinces WHERE id = $1 RETURNING *',
-      values: [id],
-  };
+  let deletedLocationNames = [];
 
   try {
-      const result = await client.query(query);
-      deletedProvince = result.rows[0];
-      //NOTA IMPORTANTE -- NOTA IMPORTANTE -- NOTA IMPORTANTE -- NOTA IMPORTANTE -- NOTA IMPORTANTE -- NOTA IMPORTANTE -- NOTA IMPORTANTE -- NOTA IMPORTANTE -- NOTA IMPORTANTE --
-      //Querido yo del futuro, te informo que no deja borrar una provincia si tiene una localidad asociada, por lo que habria que borrar su localidad primero, muchas gracias.
-      console.log('Provincia eliminada:', deletedProvince);
+    // Buscar si la provincia tiene localidades asociadas
+    const locations = await locationService.findLocationsByProvince(id);
+    if (locations.length > 0) {
+      console.log('Localidades encontradas:', locations);
+      // Si hay localidades asociadas, eliminarlas primero
+      deletedLocationNames = await locationService.deleteLocationsByProvinceId(id);
+      console.log('Localidades eliminadas:', deletedLocationNames);
+    }
+
+    // Eliminar la provincia
+    const deleteQuery = {
+      text: 'DELETE FROM provinces WHERE id = $1 RETURNING *',
+      values: [id]
+    };
+    const result = await client.query(deleteQuery);
+    deletedProvince = result.rows[0];
+
+    console.log('Provincia eliminada:', deletedProvince);
   } catch (error) {
-      console.error('Error al eliminar provincia:', error);
-      throw error; // Relanza el error para manejarlo en el controlador
+    console.error('Error al eliminar provincia:', error);
+    throw error; // Relanza el error para manejarlo en el controlador
   }
 
-  return deletedProvince; // Devuelve la provincia eliminada o null si no se encontró
+  return {
+    province: deletedProvince,
+    deletedLocationNames: deletedLocationNames
+  }; // Devuelve la provincia eliminada y los nombres de las localidades eliminadas
 }
 
 

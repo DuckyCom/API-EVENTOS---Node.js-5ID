@@ -50,4 +50,40 @@ export class LocationService{
     async getEventsLocationByLocations(id){
         
     }
+
+    async findLocationsByProvince(id) {
+        let locations = null;
+      
+        try {
+          const selectQuery = {
+            text: 'SELECT * FROM locations WHERE id_province = $1',
+            values: [id]
+          };
+          const selectResult = await client.query(selectQuery);
+          locations = selectResult.rows;
+        } catch (error) {
+          console.error('Error al buscar localidades:', error);
+          throw error;
+        }
+      
+        return locations; // Devuelve las localidades encontradas o null si no se encontraron
+      }
+      
+      async deleteLocationsByProvinceId(id) {
+        let deletedLocationNames = null;
+      
+        try {
+          const deleteQuery = {
+            text: 'DELETE FROM locations WHERE id_province = $1 RETURNING name',
+            values: [id]
+          };
+          const result = await client.query(deleteQuery);
+          deletedLocationNames = result.rows.map(row => row.name);
+        } catch (error) {
+          console.error('Error al eliminar localidades:', error);
+          throw error;
+        }
+      
+        return deletedLocationNames; // Devuelve los nombres de las localidades eliminadas o null si no se encontraron
+      }
 }

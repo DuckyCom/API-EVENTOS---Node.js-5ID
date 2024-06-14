@@ -86,9 +86,16 @@ router.delete('/:id', async (req, res) => {
   const id = req.params.id;
   console.log(id);
   try {
-    const provincia = await provinciaService.deleteProvince(id);
+    const result = await provinciaService.deleteProvince(id);
+    const provincia = result.province;
+    const localidades = result.deletedLocationNames;
+
     if (provincia) {
-      return res.status(200).json("Borrado correctamente");
+      return res.status(200).json({
+        message: "Borrado correctamente",
+        provinceName: provincia.name,
+        deletedLocations: localidades
+      });
     } else {
       return res.status(404).json({ message: "Provincia no encontrada" });
     }

@@ -301,31 +301,32 @@ router.delete("/:id/enrollment", AuthMiddleware ,async (req, res) => {
 //}
 router.patch("/:id/enrollment/:enrollment_id", AuthMiddleware, async (req, res) => {
     // Obtener los parámetros y el cuerpo del request
-    const id = req.user.id;
-    const enrollment_id = req.params.id
-    const { rating, observations } = req.body;
+    const id = req.params.id;
+    const enrollment_id = req.params.enrollment_id;
+    const rating = req.params.rating;
+    const observations = req.body.observations;
     const userId = req.user.id;  // Suponiendo que el ID del usuario autenticado se guarda en req.user.id
 
     // Validar que el rating es un entero entre 1 y 10
-    if (typeof rating !== 'number' || !Number.isInteger(rating) || rating < 1 || rating > 10) {
+    if (rating < 1 || rating > 10) {
         return res.status(400).json({ error: 'El rating debe ser un entero entre 1 y 10' });
     }
-
     try {
         // Verificar si el usuario está registrado en el evento y si el evento ya ha finalizado
-        const eventEnrollment = await eventService.getEventEnrollment(id, enrollment_id, userId);
-        if (!eventEnrollment) {
+        const eventEnrollment = await eventService.getEventEnrollment(id, userId);
+        if (eventEnrollment) {
             return res.status(404).json({ error: 'Inscripción no encontrada' });
         }
 
-        const { start_date } = eventEnrollment;
-        const hoy = new Date();
-        if (new Date(start_date) > hoy) {
-            return res.status(400).json({ error: 'El evento aún no ha finalizado' });
-        }
+        // const { start_date } = eventEnrollment;
+        // const hoy = new Date();
+        // if (new Date(start_date) > hoy) {
+        //     return res.status(400).json({ error: 'El evento aún no ha finalizado' });
+        // }
 
         // Actualizar la inscripción
         const updatedEnrollment = await eventService.updateEventEnrollment(enrollment_id, rating, observations);
+        console.log(updatedEnrollment)
         return res.status(200).json(updatedEnrollment);
     } catch (error) {
         // Manejar errores y retornar una respuesta adecuada
