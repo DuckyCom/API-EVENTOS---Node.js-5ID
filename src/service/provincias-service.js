@@ -10,10 +10,7 @@ const client = new pg.Client(config);
 const locationService = new LocationService();
 client.connect();
 export class ProvinciasService {
-    // constructor(){
-    //     this.client = new pg.Client(config);
-    //     this.client.connect();
-    // }
+
 
     async findProvByID (id) {
         let returnEntity = null;
@@ -25,8 +22,7 @@ export class ProvinciasService {
           };
           const result = await client.query(query);
           returnEntity = result.rows[0];
-          // console.log(returnEntity == null)
-          // console.log(result);
+
         } catch (error) {
           console.log(error);
         }
@@ -43,7 +39,7 @@ export class ProvinciasService {
             values: [limit, offset]
           };
           const result = await client.query(query);
-          //console.log(result);
+
           returnEntity = result.rows; //este rows NO tiene que ir con 0, ya que debe tomar todos los valores
           console.log(result);
         } catch (error) {
@@ -60,10 +56,8 @@ export class ProvinciasService {
           text: 'SELECT * FROM provinces',
         };
         const result = await client.query(query);
-        //console.log(result);
         const rows = result.rows;
         returnEntity = rows.length
-        // console.log(returnEntity);
       } catch (error) {
         console.log(error);
       }

@@ -1,11 +1,11 @@
 import express, { Router, json, query } from "express";
-import { EventCatService } from "../service/event-category-service.js"; //ESTO TAMBIEN LO DEJAMOS ASI??
+import { EventCatService } from "../service/event-category-service.js"; 
 import { AuthMiddleware } from "../auth/AuthMiddleware.js";
 import { Pagination } from "../utils/paginacion.js";
 import e from "express";
-// import { EventRepository } from "../repositories/event-respository.js";
+
 const router = express.Router();
-const eventCatService = new EventCatService(); //Esto lo dejamos asi??????
+const eventCatService = new EventCatService(); 
 const pagination = new Pagination();
 
 
@@ -16,10 +16,10 @@ router.get("/", AuthMiddleware, async (req, res) => {
 
     try {
       const eventos = await eventCatService.getAllEventsCat(limit, offset);
-      const total = eventos.total; // El total de eventos
+      const total = eventos.total; 
       const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
       return res.status(200).json({
-        eventos: eventos.collection, // La colección de eventos
+        eventos: eventos.collection,
         paginacion: paginatedResponse
       });
     } catch (error) {
@@ -33,8 +33,6 @@ router.get("/:id", async (req, res) => {
     try {
         const evento = await eventCatService.getEventsCatById(req.params.id);
         //Para comprobar si funciona el evento
-        console.log("estoy en GET evento-category-controller por id");
-        console.log(evento);
         if (evento != null) {
             return res.status(200).json(evento);
         } else {
@@ -55,8 +53,6 @@ router.post("/", async (req, res) => {
     try {
         const nameCat = req.body.nameCat.trim();
         const display = req.body.display_order;
-        console.log(nameCat, "holaaa");
-        console.log(display, "holaa");
 
         if (nameCat.length < 3 || nameCat === "") {
             return res.status(400).json(`El nombre: '${nameCat}' está vacío o tiene menos de tres (3) letras.`);
@@ -64,8 +60,6 @@ router.post("/", async (req, res) => {
         
         const evento = await eventCatService.createEventCategory(nameCat, display);
         //Para comprobar si funciona el evento
-        console.log("estoy en POST evento-category-controller");
-
          return res.status(200).json("Evento creado con éxito");
     }
     catch(error){
@@ -80,16 +74,12 @@ router.put("/", async (req, res) => {
         const id = req.body.id;
         const nameCat = req.body.nameCat.trim();
         const display = req.body.display_order;
-        console.log(nameCat);
-        console.log(display);
 
         if (nameCat.length < 3 || nameCat === "") {
             return res.status(400).json(`El nombre: '${nameCat}' está vacío o tiene menos de tres (3) letras.`);
         }
         
         const evento = await eventCatService.updateEventCategory(id, nameCat, display);
-        console.log("estoy en PUT evento-category-controller");
-
         if (evento) {
             const response = {
                 message: "Evento actualizado con éxito",
@@ -113,10 +103,7 @@ router.put("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        console.log(id);
         const evento = await eventCatService.deleteEventCategory(id);
-        console.log("estoy en DELETE evento-category-controller");
-        console.log(evento);
 
         if (evento != null) {
             return res.status(200).json({ message: "Evento eliminado con éxito", evento: evento });

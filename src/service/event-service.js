@@ -3,6 +3,7 @@ import {EventRepository} from "../repositories/event-respository.js";
 import pg from "pg";
 import { config } from "../repositories/db.js"; 
 import { Pagination } from "../utils/paginacion.js";
+import res from "express/lib/response.js";
 const client = new pg.Client(config);
 client.connect();
 
@@ -30,7 +31,6 @@ export class EventService {
       };
       const result = await client.query(query);
       returnEntity = result.rows[0];
-      // console.log(returnEntity);
     } catch (error) {
       console.log(error);
     }
@@ -174,22 +174,22 @@ export class EventService {
         registrosAfectados = result.rowCount;
         console.log('rowCount:', registrosAfectados);
     } catch (error) {
-        //console.error('Error al eliminar evento:', error);
+        console.error('Error al eliminar evento:', error);
     }
     return registrosAfectados;
   }
 
 
 
-  async getEventEnrollment(eventId, userId) {
+  async getEventEnrollment(id, userId) {
     let obtenerEnrollment = null;
     const query = {
       text:`SELECT ee.id, e.start_date FROM event_enrollments ee INNER JOIN events e ON ee.id_event = e.id WHERE ee.id_event = $1 AND ee.id_user = $2`,
-      values: [eventId, userId]
+      values: [id, userId]
     } 
     try{
       const result = await client.query(query);
-      obtenerEnrollment = result.rowCount[0];
+      obtenerEnrollment = result.rows[0];
     } catch(error){
       console.log("errorrrrr", error)
     }
@@ -197,11 +197,11 @@ export class EventService {
   }
 
 // Actualizar la inscripción al evento
-async updateEventEnrollment(enrollmentId, rating, observations) {
+async updateEventEnrollment(id_enrollment, rating, observations) {
   let updateEventEnrollment = null;  
   const query = {
     text: `UPDATE event_enrollments SET rating = $1, observations = $2 WHERE id = $3 RETURNING *`,
-    values: [rating, observations, enrollmentId]
+    values: [rating, observations, id_enrollment]
   };
   try{
     const result = await client.query(query);

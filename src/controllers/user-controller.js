@@ -1,5 +1,4 @@
 import express from "express";
-// import { JsonWebTokenError } from "jsonwebtoken";
 import {UserService} from "../service/user-service.js";
 import e from "express";
 const router = express.Router();

@@ -22,11 +22,9 @@ export class EventCatService {
 
 
    async getEventsCatById(id){
-                //Habrá que añadir el middleware
                 console.log("Estoy en GET event-category-service")
                 try {
                     const respuesta = await eventCatRepository.getEventsCatById(id);
-                    // console.log("Estoy en:  DE event-category-service", events);
                     return respuesta;
                 } catch (error) {
                     throw new Error('Error al obtener eventos por filtros');

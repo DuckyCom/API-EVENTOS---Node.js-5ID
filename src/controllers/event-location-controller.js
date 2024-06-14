@@ -13,7 +13,7 @@ router.get("/", AuthMiddleware, async (req, res) => {
 
     try {
         const locations = await eventLocationService.getAllLocationsPaginated(limit, offset);
-        const total = await eventLocationService.getLocationsCount(); // Get the count of all locations
+        const total = await eventLocationService.getLocationsCount();
         
         if (total != null) {
             const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
@@ -35,7 +35,6 @@ router.get("/", AuthMiddleware, async (req, res) => {
 router.get("/:id", AuthMiddleware, async (req, res) => {
     try {
         const location = await eventLocationService.findLocationByID(req.params.id);
-        console.log("estoy en GET event-location-controller por id");
         console.log(location);
         if (location) {
             return res.status(200).json(location);
@@ -67,7 +66,6 @@ router.post("/", AuthMiddleware, async (req, res) => {
         if(error.message === 'Bad Request'){
             return res.status(400).json({message:error.message})
         }
-        // falta throw error de usuario no autenticado :p
     }
 });
 

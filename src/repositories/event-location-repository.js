@@ -2,7 +2,6 @@ import pg from "pg";
 import { config } from "./db.js"; 
 import res from "express/lib/response.js";
 import { EventRepository } from "./event-respository.js";
-// import { generarLimitOffset } from "../utils/paginaion.js";
 
 const client = new pg.Client(config);
 client.connect();
@@ -27,7 +26,7 @@ export class EventLocationRepository{
         try {
             const query = "SELECT COUNT(*) FROM event_locations";
             const result = await client.query(query);
-            return parseInt(result.rows[0].count, 10); // Ensure the count is an integer
+            return parseInt(result.rows[0].count, 10);
         } catch (error) {
             console.error("Error en getLocationsCount:", error);
             throw error;
@@ -67,7 +66,6 @@ export class EventLocationRepository{
         } catch(error){
             console.log(error);
         }
-        // FALTA PONER UN THROW NEW ERROR SI EL USUARIO NO ESTA AUTENTICADO, PERO FALTA VER COMO SABER SI ESTA O NO AUTENTICADO.
         return returnEntity;
     }
 
@@ -94,7 +92,7 @@ export class EventLocationRepository{
             }
         } catch (error) {
             console.error("Error en putEventLocation:", error);
-            throw error; // Re-lanzar el error para que sea manejado en otro lugar
+            throw error;
         }
     }
 
@@ -109,12 +107,6 @@ export class EventLocationRepository{
             const result = await client.query(query);
             returnEntity = result.rowCount;
             console.log(returnEntity)
-            // if (result.rowCount > 0) {
-            //     console.log('Evento actualizado:', result.rows[0]);
-            //     return result.rows[0];
-            // } else {
-            //     return null;
-            // }
         } catch(error){
             console.error("Error en deleteEventLocation:", error);
             throw error;

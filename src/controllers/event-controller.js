@@ -3,7 +3,7 @@ import { EventService } from "../service/event-service.js";
 import { AuthMiddleware } from "../auth/AuthMiddleware.js";
 import { Pagination } from "../utils/paginacion.js";
 
-// import { EventRepository } from "../repositories/event-respository.js";
+
 const router = express.Router();
 const eventService = new EventService();
 const pagination = new Pagination();
@@ -24,12 +24,10 @@ router.get("/", async (req, res) => {
     }
 
     try {
-        // console.log("Estoy antes del getEventsByFilters");
+     
         const events = await eventService.getEventsByFilters(name, category, startDate, tag, limit, offset);
         const total = await eventService.getAllEventsUnconfirmedName(name, category, startDate, tag);  // Aquí `total` contiene todos los eventos que matchean con los filtros, sin importar el límite y el offset.
-        // console.log("Estoy despues del getEventsByFilters");
         const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
-        // console.log("Estoy despues del buildPaginationDto");
         return res.status(200).json({
             eventos: events,
             paginacion: paginatedResponse
@@ -51,8 +49,6 @@ router.get("/:id", async (req, res) => {
         else{
             return res.status(200).json({ Evento: evento });
         }
-        //Para comprobar si funciona el evento
-        // console.log("evento en evento-controller: ", evento);
         return res.json(evento);
     }
     catch(error){
@@ -158,7 +154,7 @@ router.put("/:id", AuthMiddleware , async (req, res) => {
     const id = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
-    const start_date = req.body.start_date; // DE ACA LO UNICO QUE NO NOS ANDA ES EL TEMA DEL STARTDATE A LA HORA DE POSTMAN. YA QUE MANDA QUE NO DEJA TIPO INTEGER.
+    const start_date = req.body.start_date;
     const duration_in_minutes = req.body.duration_in_minutes;
     const id_event_category = req.body.id_event_category;
     const id_event_location = req.body.id_event_location;
@@ -166,7 +162,6 @@ router.put("/:id", AuthMiddleware , async (req, res) => {
     const max_assistance = req.body.max_assistance;
     const enabled_for_enrollment = req.body.enabled_for_enrollment;
     const id_creator_user = req.user.id;
-// const elEvento = req.body; POLSHU RECOMIENDA HACER UNA CLASE DE EVENTO QUE CONTENGA TODO LO DE ARRIBA, YO TAMBIEN LO PIENSO, PERO NO HAY TIEMPO AHORA PARA HACERLO. LO HACEMOS EN LA SEGUNDA ENTREGA :)
 
     try {
         console.log(start_date)
@@ -182,13 +177,7 @@ router.put("/:id", AuthMiddleware , async (req, res) => {
     }
 });
 
-//eliminar un evento del que soy el organizador
-//EJEMPLO USADO:
-/*
 
-
-
-*/
 router.delete("/:id", AuthMiddleware , async (req, res) => {
     const id = req.params.id;
     try {
@@ -230,12 +219,6 @@ router.post("/:id/enrollment", AuthMiddleware, async (req, res) => {
             return res.status(400).json({ error: 'El evento ha alcanzado la capacidad máxima' });
         }
 
-        // // Verificar si el evento ya ocurrió o es hoy
-        // const today = new Date();
-        // if (event.start_date <= today) {
-        //     return res.status(400).json({ error: 'El evento ya ha ocurrido o es hoy' });
-        // }
-
         // Verificar si el usuario ya está inscrito en el evento
         const isEnrolled = await eventService.isUserEnrolled(id_user, id_event);
         if (isEnrolled) {
@@ -255,9 +238,6 @@ router.post("/:id/enrollment", AuthMiddleware, async (req, res) => {
     }
 });
 
-
-// SOLUCIONAR MAS TARDE ESTE DELETE.
-
 router.delete("/:id/enrollment", AuthMiddleware ,async (req, res) => {
     const id_user = req.user.id;
     const id_event = req.params.id;
@@ -275,43 +255,16 @@ router.delete("/:id/enrollment", AuthMiddleware ,async (req, res) => {
 });
 
 /* PUNTO 10: Rating de un Evento */
-// router.patch("/:id/enrollment", AuthMiddleware, async (req, res) => {
-//     if(!Number.isInteger(Number(req.body.rating))&& Number.isInteger(Number(req.body.attended))){
-//         return res.status(400).json({ error: 'El formato de attended no es valido' });
-//     }
-//     const rating = req.body.rating;
-//     const descripcion = req.body.description;
-//     const attended = req.body.attended;
-//     const observation = req.body.observation;
-//     try {
-//         const enrollment = await eventService.patchEnrollment(rating, descripcion, attended, observation);
-//         return res.json(enrollment);
-//     }
-//     catch(error){
-//         console.log("Error al puntuar");
-//         return res.json("Un Error");
-//     }
-// });
-
-
-// IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE --- IMPORTANTE
-// esto de aca abajo es de CHATGPT ya que lo de arriba era lo nuestro y no andaba una cosita, por lo tanto FIJARSE PORQUE CUANDO PONEMOS: http://localhost:7777/api/event/3/enrollment/5 MANDA: 
-//{
-//    "error": "El rating debe ser un entero entre 1 y 10"
-//}
-
 // IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2
 // ESTA MAL LO QUE ENVIAMOS POR PARAMETROS EN CADA ASYNC, tipo, en getEventEnrollment y UpdateEventEnrollment
 
 
 router.patch("/:id/enrollment/:entero", AuthMiddleware, async (req, res) => {
-    // Obtener los parámetros y el cuerpo del request
     const id = req.params.id; //id del evento
-    const rating = req.params.entero; //id del user
+    const rating = req.params.entero; //rating
     const observations = req.body.observations;
-    const userId = req.user.id;  // Suponiendo que el ID del usuario autenticado se guarda en req.user.id
+    const userId = req.user.id; 
 
-    // Validar que el rating es un entero entre 1 y 10
     if (rating < 1 || rating > 10) {
         return res.status(400).json({ error: 'El rating debe ser un entero entre 1 y 10' });
     }
@@ -319,18 +272,21 @@ router.patch("/:id/enrollment/:entero", AuthMiddleware, async (req, res) => {
     try {
         // Verificar si el usuario está registrado en el evento y si el evento ya ha finalizado
         const eventEnrollment = await eventService.getEventEnrollment(id, userId);
-        if (eventEnrollment) {
+        if (!eventEnrollment) {
             return res.status(404).json({ error: 'Inscripción no encontrada' });
         }
 
-        // const { start_date } = eventEnrollment;
-        // const hoy = new Date();
-        // if (new Date(start_date) > hoy) {
-        //     return res.status(400).json({ error: 'El evento aún no ha finalizado' });
-        // }
+        const id_enrollment = eventEnrollment.id;
+        console.log(id_enrollment, "holaa")
+        const start_date = eventEnrollment.start_date;
+
+        const hoy = new Date();
+        if (new Date(start_date) > hoy) {
+            return res.status(400).json({ error: 'El evento aún no ha finalizado' });
+        }
 
         // Actualizar la inscripción
-        const updatedEnrollment = await eventService.updateEventEnrollment(enrollment_id, rating, observations);
+        const updatedEnrollment = await eventService.updateEventEnrollment(id_enrollment, rating, observations);
         console.log(updatedEnrollment)
         return res.status(200).json(updatedEnrollment);
     } catch (error) {

@@ -4,7 +4,7 @@ import pg from "pg";
 import { config } from "../repositories/db.js"; 
 import { Pagination } from "../utils/paginacion.js";
 const client = new pg.Client(config);
-const pagination = new Pagination(); // Crea una instancia de Pagination
+const pagination = new Pagination();
 client.connect();
 
 export class LocationService{
@@ -110,7 +110,6 @@ export class LocationService{
             values: [limit, offset]
           };
           const result = await client.query(query);
-          //console.log(result);
           returnEntity = result.rows; //este rows NO tiene que ir con 0, ya que debe tomar todos los valores
           console.log(result);
         } catch (error) {

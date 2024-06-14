@@ -4,7 +4,6 @@ import EventController from "./src/controllers/event-controller.js";
 import ProviciasController from "./src/controllers/provincias-controller.js"
 import LocationsController from "./src/controllers/location-controller.js";
 import EventCatController from "./src/controllers/event-category-controller.js"
-// import ProvinciasController from "./src/controllers/provincias-controller.js";
 import EventLocationController from "./src/controllers/event-location-controller.js";
 
 const app = express(); // Inicia la API REST

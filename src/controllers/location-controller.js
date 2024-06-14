@@ -4,14 +4,12 @@ import { LocationService } from "../service/location-service.js";
 import { AuthMiddleware } from "../auth/AuthMiddleware.js";
 import { Pagination } from "../utils/paginacion.js";
 
-// import { EventRepository } from "../repositories/event-respository.js";
 const router = express.Router();
 const locationService = new LocationService();
 const pagination = new Pagination();
 
 // PUNTO 11: Locations
 router.get("/", async (req, res) => {
-    // debe devolver todas las locations
     const limit = pagination.parseLimit(req.query.limit);
     const offset = pagination.parseOffset(req.query.offset);
     const basePath = "api/location";
