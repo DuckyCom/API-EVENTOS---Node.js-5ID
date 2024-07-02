@@ -63,15 +63,15 @@ router.get("/:id", async (req, res) => {
 router.get("/:id/enrollment", async (req, res) => {
     const first_name = req.query.first_name;
     const last_name = req.query.last_name;
-    const userName = req.query.userName;
+    const username = req.query.username;
     const attended = req.query.attended;
     const rating = req.query.rating;
     console.log("controller")
     try {
-        const participantesEvento = await eventService.getParticipantesEvento(req.params.id, first_name, last_name, userName, attended, rating);
+        const participantesEvento = await eventService.getParticipantesEvento(req.params.id, first_name, last_name, username, attended, rating);
         
         if(!participantesEvento){
-            return res.status(400).json({ error: 'El formato de attended no es valido' });
+            return res.status(200).json({ participantesEvento: []});
         }
         return res.json(participantesEvento);
     }
@@ -177,20 +177,31 @@ router.put("/:id", AuthMiddleware , async (req, res) => {
     }
 });
 
-
-router.delete("/:id", AuthMiddleware , async (req, res) => {
+router.delete("/:id", AuthMiddleware, async (req, res) => {
     const id = req.params.id;
+    const userId = req.user.id;
+
     try {
+        // revisa mediante la funcion del evento por id el usuario creador
+        const event = await eventService.getEventById(id);
+        if (!event) {
+            return res.status(404).json({ mensaje: 'Evento no encontrado' });
+        }
+
+        if (event.id_creator_user !== userId) {
+            return res.status(403).json({ mensaje: 'No tienes permisos para eliminar este evento' });
+        }
+
+        // si pasa los mensajes anteriores procede a eliminar el evento
         const rowsAffected = await eventService.deleteEvent(id);
-        if (rowsAffected > 0){
-            return res.status(200).json({'mensaje':'Se elimino el evento'});
-        }else{
-            return res.status(400).json({'mensaje':'no se elimino'});
-        }        
-    }
-    catch(error){
-        console.log("Error al eliminar evento");
-        return res.json("Un Error");
+        if (rowsAffected > 0) {
+            return res.status(200).json({ mensaje: 'Se eliminó el evento' });
+        } else {
+            return res.status(400).json({ mensaje: 'No se eliminó el evento' });
+        }
+    } catch (error) {
+        console.log("Error al eliminar evento:", error);
+        return res.status(500).json({ mensaje: 'Error interno al eliminar el evento' });
     }
 });
 

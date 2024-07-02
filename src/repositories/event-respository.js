@@ -91,21 +91,55 @@ throw new Error('Error al obtener eventos por filtros');
 }
 }
     
+    // async getParticipantesEvento(id, queryPrimero, arrayParams) {
+    //     let obtenerEventosParticipantes;
+    //     const sqlQuery = {
+    //         text: 'SELECT er.*, u.first_name, u.last_name, u.username, e.name FROM event_enrollments er ' +
+    //               'LEFT JOIN users u ON er.id_user = u.id ' +
+    //               'LEFT JOIN events e ON er.id_event = e.id ' +
+    //               'LEFT JOIN event_tags et ON e.id = et.id_event ' +
+    //               'LEFT JOIN tags ON et.id = tags.id ' +
+    //               'WHERE e.id = $1 ' + queryPrimero,
+    //         values: [id].concat(arrayParams)
+    //     };
+    //     try{
+    //         const result = await client.query(sqlQuery);
+    //         obtenerEventosParticipantes = result.rows[0];
+    //         console.log(obtenerEventosParticipantes);
+    //     } catch (error){
+    //         console.error("error al obtener", error)
+    //     }
+    //     return obtenerEventosParticipantes;
+    // }
+
+    // AHORA CON ESTE DE ACA ABAJO FUNCIONA EL PUNTO 5 CORRECTAMENTE
     async getParticipantesEvento(id, queryPrimero, arrayParams) {
         let obtenerEventosParticipantes;
+    
         const sqlQuery = {
-            text: 'SELECT er.*,u.first_name,u.last_name,u.username,e.name FROM event_enrollments er LEFT JOIN users u ON er.id_user = u.id LEFT JOIN events e ON er.id_event = e.id LEFT JOIN event_tags et ON e.id = et.id_event LEFT JOIN tags ON et.id = tags.id WHERE e.id = $1' + queryPrimero, 
-            values: [id].concat(arrayParams)
+            text: 'SELECT er.*, u.first_name, u.last_name, u.username, e.name ' +
+                  'FROM event_enrollments er ' +
+                  'LEFT JOIN users u ON er.id_user = u.id ' +
+                  'LEFT JOIN events e ON er.id_event = e.id ' +
+                  'LEFT JOIN event_tags et ON e.id = et.id_event ' +
+                  'LEFT JOIN tags ON et.id = tags.id ' +
+                  'WHERE e.id = $1' + queryPrimero,
+            values: arrayParams
         };
-        try{
+    
+        try {
             const result = await client.query(sqlQuery);
             obtenerEventosParticipantes = result.rows[0];
             console.log(obtenerEventosParticipantes);
-        } catch (error){
-            console.error("error al obtener", error)
+        } catch (error) {
+            console.error("error al obtener", error);
+            throw error;  // Importante lanzar el error para que se maneje en capas superiores
         }
+    
         return obtenerEventosParticipantes;
     }
+    
+
     async postInscripcionEvento(id_user,id_event) { 
         let inscipcionEvento;
         const query = {

@@ -51,36 +51,73 @@ export class EventService {
 }
 
 
-  async getParticipantesEvento(id, first_name, last_name, userName, attended, rating){
-    if(attended) {
+  // async getParticipantesEvento(id, first_name, last_name, userName, attended, rating){
+  //   if(attended) {
+  //       return false;
+  //   }
+  //   let queryPrimero = "";
+  //   const array = []
+  //   if(first_name){
+  //     queryPrimero +=  " AND u.first_name = $2";
+  //     array.push(first_name)
+  //   }    
+  //   if(last_name){
+  //     queryPrimero += " AND u.last_name = $3";
+  //     array.push(last_name)
+  //   }  
+  //   if(userName){
+  //     queryPrimero += " AND u.username = $4";
+  //     array.push(userName)
+  //   }
+  //   if(attended){
+  //     queryPrimero += " AND er.attended = $5";
+  //     array.push(attended)
+  //   }    
+  //   if(rating){
+  //     queryPrimero += " AND er.rating >= $6";
+  //     array.push(rating)
+  //   }
+  //   const eventRepository = new EventRepository();
+  //   const resultadoGet = await eventRepository.getParticipantesEvento(id, queryPrimero, array);
+  //   return resultadoGet;
+  // }
+
+  // AHORA CON ESTE DE ACA ABAJO FUNCIONA EL PUNTO 5 CORRECTAMENTE
+  async getParticipantesEvento(id, first_name, last_name, username, attended, rating) {
+    if (attended) {
         return false;
     }
+
     let queryPrimero = "";
-    const array = []
-    if(first_name){
-      queryPrimero +=  " AND u.first_name = $2";
-      array.push(first_name)
-    }    
-    if(last_name){
-      queryPrimero += " AND u.last_name = $3";
-      array.push(last_name)
+    const arrayParams = [id];
+
+    if (first_name) {
+        queryPrimero += " AND u.first_name = $" + (arrayParams.length + 1);
+        arrayParams.push(first_name);
     }
-    if(userName){
-      queryPrimero += " AND u.username = $4";
-      array.push(userName)
+    if (last_name) {
+        queryPrimero += " AND u.last_name = $" + (arrayParams.length + 1);
+        arrayParams.push(last_name);
     }
-    if(attended){
-      queryPrimero += " AND er.attended = $5";
-      array.push(attended)
-    }    
-    if(rating){
-      queryPrimero += " AND er.rating >= $6";
-      array.push(rating)
+    if (username) {
+        queryPrimero += " AND u.username = $" + (arrayParams.length + 1);
+        arrayParams.push(username);
     }
+    if (attended) {
+        queryPrimero += " AND er.attended = $" + (arrayParams.length + 1);
+        arrayParams.push(attended);
+    }
+    if (rating) {
+        queryPrimero += " AND er.rating >= $" + (arrayParams.length + 1);
+        arrayParams.push(rating);
+    }
+
     const eventRepository = new EventRepository();
-    const resultadoGet = await eventRepository.getParticipantesEvento(id, queryPrimero, array);
+    const resultadoGet = await eventRepository.getParticipantesEvento(id, queryPrimero, arrayParams);
     return resultadoGet;
-  }
+}
+
+
   async postInscripcionEvento(id_user, id_event){
     const eventRepository = new EventRepository();
     const resultadoPost = await eventRepository.postInscripcionEvento(id_user, id_event);
