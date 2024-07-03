@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
     const offset = pagination.parseOffset(req.query.offset);
     const basePath = "api/location";
     const url = req.originalUrl;
-    try {
+    try { 
         const location = await locationService.findLocationsPaginated(limit, offset)
         const total = await locationService.getAllLocations()
         const paginatedResponse = await pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
