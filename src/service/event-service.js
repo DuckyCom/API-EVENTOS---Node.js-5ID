@@ -10,16 +10,79 @@ client.connect();
 
 export class EventService {
 
+    // async getEventsByFilters(name, category, startDate, tag, limit, offset) {
+    //     try {
+    //         const eventRepository = new EventRepository();
+    //         const events = await eventRepository.getEventsByFilters(name, category, startDate, tag, limit, offset);
+    //         return events;
+    //     } catch (error) {
+    //         console.error("Error en getEventsByFilters de EventService:", error);
+    //         throw new Error('Error al obtener eventos por filtros');
+    //     }
+    //   } 
+
     async getEventsByFilters(name, category, startDate, tag, limit, offset) {
-        try {
-            const eventRepository = new EventRepository();
-            const events = await eventRepository.getEventsByFilters(name, category, startDate, tag, limit, offset);
-            return events;
-        } catch (error) {
-            console.error("Error en getEventsByFilters de EventService:", error);
-            throw new Error('Error al obtener eventos por filtros');
-        }
-    }
+      try {
+          const eventRepository = new EventRepository();
+          const events = await eventRepository.getEventsByFilters(name, category, startDate, tag, limit, offset);
+
+          // Formatear la respuesta con la estructura correcta
+          const formattedEvents = events.map(event => ({
+              id: event.id,
+              name: event.name,
+              description: event.description,
+              event_category: {
+                  id: event.id_event_category,
+                  name: event.category_name
+              },
+              event_location: {
+                  id: event.id_event_location,
+                  name: event.event_location_name,
+                  full_address: event.full_address,
+                  latitude: event.event_location_latitude,
+                  longitude: event.event_location_longitude,
+                  max_capacity: event.event_location_max_capacity,
+                  location: {
+                      id: event.location_id,
+                      name: event.location_name,
+                      latitude: event.location_latitude,
+                      longitude: event.location_longitude,
+                      province: {
+                          id: event.province_id,
+                          name: event.province_name,
+                          full_name: event.province_full_name,
+                          latitude: event.province_latitude,
+                          longitude: event.province_longitude,
+                          display_order: event.province_display_order
+                      }
+                  }
+              },
+              start_date: event.start_date,
+              duration_in_minutes: event.duration_in_minutes,
+              price: event.price,
+              enabled_for_enrollment: event.enabled_for_enrollment,
+              max_assistance: event.max_assistance,
+              creator_user: {
+                  id: event.id_creator_user,
+                  username: event.username,
+                  first_name: event.first_name,
+                  last_name: event.last_name
+              },
+              tags: event.tags ? event.tags.map(tag => ({
+                  id: tag.id,
+                  name: tag.name
+              })) : []
+          }));
+
+          return formattedEvents;
+      } catch (error) {
+          console.error("Error en getEventsByFilters de EventService:", error);
+          throw new Error('Error al obtener eventos por filtros');
+      }
+  }
+
+
+
 
   async getEventById (id) {
     let returnEntity = null;

@@ -10,10 +10,38 @@ const pagination = new Pagination();
 
 // PUNTO 2 Y 3: LISTADO Y BUSQUEDA DE UN EVENTO
 // VERIFICAR SI ES QUE FALTA ARREGLAR CATEGORY Y TAG
+// router.get("/", async (req, res) => {
+//     const limit = pagination.parseLimit(req.query.limit);
+//     const offset = pagination.parseOffset(req.query.offset);
+//     const basePath = "api/event"
+//     const tag = req.query.tag;
+//     const startDate = req.query.startDate;
+//     let name = req.query.name;
+//     const category = req.query.category;
+
+//     if (name) {
+//         name = name.trim();
+//     }
+
+//     try {
+     
+//         const events = await eventService.getEventsByFilters(name, category, startDate, tag, limit, offset);
+//         const total = await eventService.getAllEventsUnconfirmedName(name, category, startDate, tag);  // Aquí `total` contiene todos los eventos que matchean con los filtros, sin importar el límite y el offset.
+//         const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
+//         return res.status(200).json({
+//             eventos: events,
+//             paginacion: paginatedResponse
+//         });
+//     } catch (error) {
+//         console.log("Error al buscar eventos:", error);
+//         return res.status(500).json({ error: "Un Error ha ocurrido" });
+//     }
+// });
+
 router.get("/", async (req, res) => {
     const limit = pagination.parseLimit(req.query.limit);
     const offset = pagination.parseOffset(req.query.offset);
-    const basePath = "api/event"
+    const basePath = "api/event";
     const tag = req.query.tag;
     const startDate = req.query.startDate;
     let name = req.query.name;
@@ -24,19 +52,51 @@ router.get("/", async (req, res) => {
     }
 
     try {
-     
         const events = await eventService.getEventsByFilters(name, category, startDate, tag, limit, offset);
-        const total = await eventService.getAllEventsUnconfirmedName(name, category, startDate, tag);  // Aquí `total` contiene todos los eventos que matchean con los filtros, sin importar el límite y el offset.
+        const total = await eventService.getAllEventsUnconfirmedName(name, category, startDate, tag);
         const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
+
         return res.status(200).json({
-            eventos: events,
-            paginacion: paginatedResponse
+            collection: events,
+            pagination: paginatedResponse
         });
     } catch (error) {
         console.log("Error al buscar eventos:", error);
         return res.status(500).json({ error: "Un Error ha ocurrido" });
     }
 });
+
+
+router.get("/", async (req, res) => {
+    const limit = pagination.parseLimit(req.query.limit);
+    const offset = pagination.parseOffset(req.query.offset);
+    const basePath = "/api/event";
+    const tag = req.query.tag;
+    const startDate = req.query.startDate;
+    let name = req.query.name;
+    const category = req.query.category;
+
+    if (name) {
+        name = name.trim();
+    }
+
+    try {
+        const events = await eventService.getEventsByFilters(name, category, startDate, tag, limit, offset);
+        const total = await eventService.getAllEventsUnconfirmedName(name, category, startDate, tag);
+        const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
+
+        const response = {
+            collection: events,
+            pagination: paginatedResponse
+        };
+
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log("Error al buscar eventos:", error);
+        return res.status(500).json({ error: "Un Error ha ocurrido" });
+    }
+});
+
  
 //PUNTO 4: DETALLE DE UN EVENTO
 router.get("/:id", async (req, res) => {

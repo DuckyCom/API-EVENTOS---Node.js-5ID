@@ -11,45 +11,109 @@ const respuesta = await client.query(sql);
 
 //tercera parte de la travesia, aquí se ingresa la query y se obtiene la respuesta en rows
 export class EventRepository{
-      async getEventsByFilters(name, category, startDate, tag, limit, offset) {
+//       async getEventsByFilters(name, category, startDate, tag, limit, offset) {
 
 
-           let sqlQuery = "SELECT * FROM events WHERE 1=1";
+//            let sqlQuery = "SELECT * FROM events WHERE 1=1";
            
-           if (name) {
-               sqlQuery += ` AND "name" LIKE '%${name}%'`;
-            }
-           if (category) {
-               const categoryIdQuery = `SELECT id FROM event_categories WHERE "name" = '${category}'`;
-               const { rows: categoryRows } = await client.query(categoryIdQuery);
-               const categoryId = categoryRows[0]?.id;
-               if (categoryId) {
-                   sqlQuery += ` AND id_event_category = '${categoryId}'`;
-               }
-           }
-          if (startDate) {
-               sqlQuery += ` AND start_date::date = '${startDate}'::date`;
-           }
-           if (tag) {
-            const tagIdQuery = `SELECT id FROM tags WHERE "name" = '${tag}'`;
-               const { rows: tagRows } = await client.query(tagIdQuery);
-               const tagId = tagRows[0]?.id;
-              if (tagId) {
-                    sqlQuery += ` AND id IN (SELECT id_event FROM event_tags WHERE id_tag = '${tagId}')`;
-                }
-            }
+//            if (name) {
+//                sqlQuery += ` AND "name" LIKE '%${name}%'`;
+//             }
+//            if (category) {
+//                const categoryIdQuery = `SELECT id FROM event_categories WHERE "name" = '${category}'`;
+//                const { rows: categoryRows } = await client.query(categoryIdQuery);
+//                const categoryId = categoryRows[0]?.id;
+//                if (categoryId) {
+//                    sqlQuery += ` AND id_event_category = '${categoryId}'`;
+//                }
+//            }
+//           if (startDate) {
+//                sqlQuery += ` AND start_date::date = '${startDate}'::date`;
+//            }
+//            if (tag) {
+//             const tagIdQuery = `SELECT id FROM tags WHERE "name" = '${tag}'`;
+//                const { rows: tagRows } = await client.query(tagIdQuery);
+//                const tagId = tagRows[0]?.id;
+//               if (tagId) {
+//                     sqlQuery += ` AND id IN (SELECT id_event FROM event_tags WHERE id_tag = '${tagId}')`;
+//                 }
+//             }
     
-            // Agregar paginación utilizando limit y offset
-            sqlQuery += ` LIMIT ${limit} OFFSET ${offset}`;
-    try {
-    const { rows } = await client.query(sqlQuery);
+//             // Agregar paginación utilizando limit y offset
+//             sqlQuery += ` LIMIT ${limit} OFFSET ${offset}`;
+//     try {
+//     const { rows } = await client.query(sqlQuery);
 
-    return rows;
-    } catch (error) {
-    console.error("Error al ejecutar la consulta SQL:", error);
-    throw new Error('Error al obtener eventos por filtros');
+//     return rows;
+//     } catch (error) {
+//     console.error("Error al ejecutar la consulta SQL:", error);
+//     throw new Error('Error al obtener eventos por filtros');
+//     }
+//  }
+
+async getEventsByFilters(name, category, startDate, tag, limit, offset) {
+    let sqlQuery = `
+        SELECT 
+            e.*, 
+            ec.name as category_name, 
+            el.name as event_location_name, 
+            el.full_address, 
+            el.latitude as event_location_latitude, 
+            el.longitude as event_location_longitude, 
+            el.max_capacity as event_location_max_capacity,
+            loc.id as location_id,
+            loc.name as location_name,
+            loc.latitude as location_latitude,
+            loc.longitude as location_longitude,
+            prov.id as province_id,
+            prov.name as province_name,
+            prov.full_name as province_full_name,
+            prov.latitude as province_latitude,
+            prov.longitude as province_longitude,
+            prov.display_order as province_display_order
+        FROM events e
+        LEFT JOIN event_categories ec ON e.id_event_category = ec.id
+        LEFT JOIN event_locations el ON e.id_event_location = el.id
+        LEFT JOIN locations loc ON el.id_location = loc.id
+        LEFT JOIN provinces prov ON loc.id_province = prov.id
+        WHERE 1=1`;
+
+    if (name) {
+        sqlQuery += ` AND e.name LIKE '%${name}%'`;
     }
- }
+    if (category) {
+        const categoryIdQuery = `SELECT id FROM event_categories WHERE name = '${category}'`;
+        const { rows: categoryRows } = await client.query(categoryIdQuery);
+        const categoryId = categoryRows[0]?.id;
+        if (categoryId) {
+            sqlQuery += ` AND e.id_event_category = '${categoryId}'`;
+        }
+    }
+    if (startDate) {
+        sqlQuery += ` AND e.start_date::date = '${startDate}'::date`;
+    }
+    if (tag) {
+        const tagIdQuery = `SELECT id FROM tags WHERE name = '${tag}'`;
+        const { rows: tagRows } = await client.query(tagIdQuery);
+        const tagId = tagRows[0]?.id;
+        if (tagId) {
+            sqlQuery += ` AND e.id IN (SELECT id_event FROM event_tags WHERE id_tag = '${tagId}')`;
+        }
+    }
+
+    sqlQuery += ` LIMIT ${limit} OFFSET ${offset}`;
+
+    try {
+        const { rows } = await client.query(sqlQuery);
+        return rows;
+    } catch (error) {
+        console.error("Error al ejecutar la consulta SQL:", error);
+        throw new Error('Error al obtener eventos por filtros');
+    }
+}
+
+
+
 
  async getAllEventsUnconfirmedName(name, category, startDate, tag, limit, offset) {
 
