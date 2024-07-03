@@ -84,22 +84,85 @@ export class EventService {
 
 
 
-  async getEventById (id) {
-    let returnEntity = null;
-    console.log("Estoy en: getEventById");
+  // async getEventById (id) {
+  //   let returnEntity = null;
+  //   console.log("Estoy en: getEventById");
+  //   try {
+  //     const query = {
+  //       text: 'SELECT * FROM events WHERE id = $1',
+  //       values: [id]
+  //     };
+  //     const result = await client.query(query);
+  //     returnEntity = result.rows[0];
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   return returnEntity;
+  // }
+  async getEventById(id) {
     try {
-      const query = {
-        text: 'SELECT * FROM events WHERE id = $1',
-        values: [id]
-      };
-      const result = await client.query(query);
-      returnEntity = result.rows[0];
+        const eventRepository = new EventRepository();
+        const event = await eventRepository.getEventById(id);
+
+        if (!event) {
+            return null;
+        }
+
+        // Formatear la respuesta con la estructura correcta
+        const formattedEvent = {
+            id: event.id,
+            name: event.name,
+            description: event.description,
+            event_category: {
+                id: event.id_event_category,
+                name: event.category_name
+            },
+            event_location: {
+                id: event.id_event_location,
+                name: event.event_location_name,
+                full_address: event.full_address,
+                latitude: event.event_location_latitude,
+                longitude: event.event_location_longitude,
+                max_capacity: event.event_location_max_capacity,
+                location: {
+                    id: event.location_id,
+                    name: event.location_name,
+                    latitude: event.location_latitude,
+                    longitude: event.location_longitude,
+                    province: {
+                        id: event.province_id,
+                        name: event.province_name,
+                        full_name: event.province_full_name,
+                        latitude: event.province_latitude,
+                        longitude: event.province_longitude,
+                        display_order: event.province_display_order
+                    }
+                }
+            },
+            start_date: event.start_date,
+            duration_in_minutes: event.duration_in_minutes,
+            price: event.price,
+            enabled_for_enrollment: event.enabled_for_enrollment,
+            max_assistance: event.max_assistance,
+            creator_user: {
+                id: event.id_creator_user,
+                username: event.username,
+                first_name: event.first_name,
+                last_name: event.last_name
+            },
+            tags: event.tags ? event.tags.map(tag => ({
+                id: tag.id,
+                name: tag.name
+            })) : []
+        };
+
+        return formattedEvent;
     } catch (error) {
-      console.log(error);
+        console.error("Error en getEventById de EventService:", error);
+        throw new Error('Error al obtener el evento por ID');
     }
-    return returnEntity;
-  }
-  
+}
+
 
   
   async getAllEventsUnconfirmedName(name, category, startDate, tag) {

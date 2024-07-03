@@ -99,23 +99,36 @@ router.get("/", async (req, res) => {
 
  
 //PUNTO 4: DETALLE DE UN EVENTO
-router.get("/:id", async (req, res) => {
+// router.get("/:id", async (req, res) => {
     
+//     try {
+//         const evento = await eventService.getEventById(req.params.id);
+//         if (!evento) {
+//             return res.status(404).json({ error: 'Evento no encontrado' });
+//         }
+//         else{
+//             return res.status(200).json({ Evento: evento });
+//         }
+//         return res.json(evento);
+//     }
+//     catch(error){
+//         console.log("No hay evento existente");
+//         return res.json("Ha ocurrido un error");
+//     }
+// });
+router.get("/:id", async (req, res) => {
     try {
         const evento = await eventService.getEventById(req.params.id);
         if (!evento) {
             return res.status(404).json({ error: 'Evento no encontrado' });
         }
-        else{
-            return res.status(200).json({ Evento: evento });
-        }
-        return res.json(evento);
-    }
-    catch(error){
+        return res.status(200).json({ Evento: evento });
+    } catch (error) {
         console.log("No hay evento existente");
-        return res.json("Ha ocurrido un error");
+        return res.status(500).json({ error: 'Ha ocurrido un error' });
     }
 });
+
 
 
 // PUNTO 5: LISTADO DE PARTICIPANTES DE UN EVENTO.

@@ -112,7 +112,44 @@ async getEventsByFilters(name, category, startDate, tag, limit, offset) {
     }
 }
 
+async getEventById(id) {
+    const sqlQuery = `
+        SELECT 
+            e.*, 
+            ec.name as category_name, 
+            el.name as event_location_name, 
+            el.full_address, 
+            el.latitude as event_location_latitude, 
+            el.longitude as event_location_longitude, 
+            el.max_capacity as event_location_max_capacity,
+            loc.id as location_id,
+            loc.name as location_name,
+            loc.latitude as location_latitude,
+            loc.longitude as location_longitude,
+            prov.id as province_id,
+            prov.name as province_name,
+            prov.full_name as province_full_name,
+            prov.latitude as province_latitude,
+            prov.longitude as province_longitude,
+            prov.display_order as province_display_order
+        FROM events e
+        LEFT JOIN event_categories ec ON e.id_event_category = ec.id
+        LEFT JOIN event_locations el ON e.id_event_location = el.id
+        LEFT JOIN locations loc ON el.id_location = loc.id
+        LEFT JOIN provinces prov ON loc.id_province = prov.id
+        WHERE e.id = $1`;
 
+    try {
+        const { rows } = await client.query({
+            text: sqlQuery,
+            values: [id]
+        });
+        return rows[0];
+    } catch (error) {
+        console.error("Error al ejecutar la consulta SQL:", error);
+        throw new Error('Error al obtener el evento por ID');
+    }
+}
 
 
  async getAllEventsUnconfirmedName(name, category, startDate, tag, limit, offset) {
