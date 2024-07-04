@@ -18,7 +18,7 @@ router.get("/", AuthMiddleware, async (req, res) => {
         if (total != null) {
             const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
             return res.status(200).json({
-                locacion_de_eventos: locations,
+                collection: locations,
                 paginacion: paginatedResponse
             });
         } else {

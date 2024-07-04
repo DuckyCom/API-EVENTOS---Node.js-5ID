@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
         const paginatedResponse = await pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
 
         return res.status(200).json({
-            locacion: location,
+            collection: location,
             paginacion: paginatedResponse
           }); 
     
@@ -49,7 +49,7 @@ router.get("/:id", async (req, res) => {
 router.get("/:id/event-location", AuthMiddleware, async (req, res) => {
     const id = req.params.id; // location id
     const user_id = req.user.id;
-
+    
     try {
         // Verifica si la ubicación existe
         const location = await locationService.getLocationById(id);

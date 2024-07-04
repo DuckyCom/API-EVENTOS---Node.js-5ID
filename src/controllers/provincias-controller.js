@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
     const paginatedResponse = await pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
 
     return res.status(200).json({
-      provincias: provincias,
+      collection: provincias,
       paginacion: paginatedResponse
     });
   } catch (err) {
@@ -54,7 +54,7 @@ router.get('/:id/locations', async (req, res) => {
     console.log(total)
     const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
     return res.status(200).json({
-      locaciones: locations,
+      collection: locations,
       paginacion: paginatedResponse
     });
   } catch (err) {

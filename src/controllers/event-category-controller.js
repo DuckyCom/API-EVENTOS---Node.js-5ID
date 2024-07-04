@@ -19,7 +19,7 @@ router.get("/", AuthMiddleware, async (req, res) => {
       const total = eventos.total; 
       const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
       return res.status(200).json({
-        eventos: eventos.collection,
+        collection: eventos.collection,
         paginacion: paginatedResponse
       });
     } catch (error) {

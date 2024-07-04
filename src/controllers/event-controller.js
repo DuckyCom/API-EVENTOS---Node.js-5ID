@@ -95,7 +95,8 @@ router.get("/:id", async (req, res) => {
         if (!evento) {
             return res.status(404).json({ error: 'Evento no encontrado' });
         }
-        return res.status(200).json({ Evento: evento });
+        return res.status(200).json(evento);
+        //Elimino 'Evento: ' porque no es necesario segun el ejemplo de la consigna
     } catch (error) {
         console.log("No hay evento existente");
         return res.status(500).json({ error: 'Ha ocurrido un error' });
