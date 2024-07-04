@@ -9,37 +9,6 @@ const eventService = new EventService();
 const pagination = new Pagination();
 
 // PUNTO 2 Y 3: LISTADO Y BUSQUEDA DE UN EVENTO
-// VERIFICAR SI ES QUE FALTA ARREGLAR CATEGORY Y TAG
-
-router.get("/", async (req, res) => {
-    const limit = pagination.parseLimit(req.query.limit);
-    const offset = pagination.parseOffset(req.query.offset);
-    const basePath = "api/event";
-    const tag = req.query.tag;
-    const startDate = req.query.startDate;
-    let name = req.query.name;
-    const category = req.query.category;
-
-    if (name) {
-        name = name.trim();
-    }
-
-    try {
-        const events = await eventService.getEventsByFilters(name, category, startDate, tag, limit, offset);
-        const total = await eventService.getAllEventsUnconfirmedName(name, category, startDate, tag);
-        const paginatedResponse = pagination.buildPaginationDto(limit, offset, total, req.path, basePath);
-
-        return res.status(200).json({
-            collection: events,
-            pagination: paginatedResponse
-        });
-    } catch (error) {
-        console.log("Error al buscar eventos:", error);
-        return res.status(500).json({ error: "Un Error ha ocurrido" });
-    }
-});
-
-
 router.get("/", async (req, res) => {
     const limit = pagination.parseLimit(req.query.limit);
     const offset = pagination.parseOffset(req.query.offset);
@@ -72,23 +41,7 @@ router.get("/", async (req, res) => {
 
  
 //PUNTO 4: DETALLE DE UN EVENTO
-// router.get("/:id", async (req, res) => {
-    
-//     try {
-//         const evento = await eventService.getEventById(req.params.id);
-//         if (!evento) {
-//             return res.status(404).json({ error: 'Evento no encontrado' });
-//         }
-//         else{
-//             return res.status(200).json({ Evento: evento });
-//         }
-//         return res.json(evento);
-//     }
-//     catch(error){
-//         console.log("No hay evento existente");
-//         return res.json("Ha ocurrido un error");
-//     }
-// });
+
 router.get("/:id", async (req, res) => {
     try {
         const evento = await eventService.getEventById(req.params.id);
@@ -313,9 +266,6 @@ router.delete("/:id/enrollment", AuthMiddleware ,async (req, res) => {
 });
 
 /* PUNTO 10: Rating de un Evento */
-// IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2 --- IMPORTANTE 2
-// ESTA MAL LO QUE ENVIAMOS POR PARAMETROS EN CADA ASYNC, tipo, en getEventEnrollment y UpdateEventEnrollment
-
 
 router.patch("/:id/enrollment/:entero", AuthMiddleware, async (req, res) => {
     const id = req.params.id; //id del evento

@@ -1,15 +1,127 @@
 {
 	"info": {
-		"_postman_id": "61c3a215-ca46-4773-886a-b94ca8c01bde",
+		"_postman_id": "55ad2548-dac3-478a-8021-a3b1d29a6769",
 		"name": "DOCUMENTACION API REST",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36755518"
 	},
 	"item": [
 		{
-			"name": "Punto 2 y 3",
+			"name": "Event",
 			"item": [
 				{
-					"name": "GET PUNTO 2",
+					"name": "Enrollment",
+					"item": [
+						{
+							"name": "Create event enrollment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNzQxNzEsImV4cCI6MTcxODM3Nzc3MSwiaXNzIjoibG9jYWxob3N0In0.GhFx2XYOPy6VFgAsR_GPtow1R_-J4qhkOQgolaz8SsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7777/api/event/4/enrollment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7777",
+									"path": [
+										"api",
+										"event",
+										"4",
+										"enrollment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete event enrollment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNzQxNzEsImV4cCI6MTcxODM3Nzc3MSwiaXNzIjoibG9jYWxob3N0In0.GhFx2XYOPy6VFgAsR_GPtow1R_-J4qhkOQgolaz8SsY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7777/api/event/1/enrollment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7777",
+									"path": [
+										"api",
+										"event",
+										"1",
+										"enrollment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Rating Event Enrollment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNjI5MDAsImV4cCI6MTcxODM2NjUwMCwiaXNzIjoibG9jYWxob3N0In0.N0mlC0JXSomseDd9sv6jm3A0Q2lAd_wI3K15FLS65Ss",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"observations\": \"muy bueno\"    \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7777/api/event/3/enrollment/5",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7777",
+									"path": [
+										"api",
+										"event",
+										"3",
+										"enrollment",
+										"5"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get all event",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -30,7 +142,7 @@
 					"response": []
 				},
 				{
-					"name": "GET PUNTO 3",
+					"name": "Get all event by a key",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -55,14 +167,9 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "Punto 4",
-			"item": [
+				},
 				{
-					"name": "GET",
+					"name": "Get event by ID",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -81,42 +188,9 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "Punto 5",
-			"item": [
-				{
-					"name": "Error",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:7777/api/event/1/enrollment?first_name=Julian",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "7777",
-							"path": [
-								"api",
-								"event",
-								"1",
-								"enrollment"
-							],
-							"query": [
-								{
-									"key": "first_name",
-									"value": "Julian"
-								}
-							]
-						}
-					},
-					"response": []
 				},
 				{
-					"name": "Correcto",
+					"name": "Get listado participantes evento",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -152,11 +226,122 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Create event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNzQxNzEsImV4cCI6MTcxODM3Nzc3MSwiaXNzIjoibG9jYWxob3N0In0.GhFx2XYOPy6VFgAsR_GPtow1R_-J4qhkOQgolaz8SsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"ColdPlay\",\r\n    \"description\": \"Un concierto muy PLAY\",\r\n    \"id_event_category\": 1,\r\n    \"id_event_location\": 1,\r\n    \"start_date\": \"2022/12/03 t 00:00:00\" ,\r\n    \"duration_in_minutes\": 210,\r\n    \"price\": 20000,\r\n    \"enabled_for_enrollment\": true,\r\n    \"max_assistance\": 90000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7777/api/event/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"api",
+								"event",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTc3NjY5ODAsImV4cCI6MTcxNzc3MDU4MCwiaXNzIjoibG9jYWxob3N0In0.9ogf8Wh66VfBvgDw3f2l-hA2YYhZA6DJIWQ6ev_a5rU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/api/event/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"api",
+								"event",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNzQxNzEsImV4cCI6MTcxODM3Nzc3MSwiaXNzIjoibG9jYWxob3N0In0.GhFx2XYOPy6VFgAsR_GPtow1R_-J4qhkOQgolaz8SsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Harry Styles 2344\",\r\n    \"description\": \"Un concierto muy STYLES\",\r\n    \"id_event_category\": 1,\r\n    \"id_event_location\": 1,\r\n    \"start_date\": \"2022/12/03 t 00:00:00\" ,\r\n    \"duration_in_minutes\": 210,\r\n    \"price\": 17500,\r\n    \"enabled_for_enrollment\": true,\r\n    \"max_assistance\": 90000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7777/api/event/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"api",
+								"event",
+								"4"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "Punto 6",
+			"name": "User",
 			"item": [
 				{
 					"name": "Post Login",
@@ -222,7 +407,7 @@
 			]
 		},
 		{
-			"name": "Punto 7",
+			"name": "Province",
 			"item": [
 				{
 					"name": "Get By ID",
@@ -267,7 +452,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Locations",
+					"name": "Get Locations by province",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -289,7 +474,7 @@
 					"response": []
 				},
 				{
-					"name": "Post",
+					"name": "Create province",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -319,10 +504,40 @@
 					"response": []
 				},
 				{
-					"name": "Delete",
+					"name": "Delete province",
 					"request": {
 						"method": "DELETE",
 						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/api/province/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"api",
+								"province",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Province",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"Sokovia\", \r\n   \"full_name\": \"The land of Sokovia\",\r\n   \"latitude\": -100.61444091496875,\r\n   \"longitude\": -500.445877075195312\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:7777/api/province/1",
 							"protocol": "http",
@@ -342,239 +557,7 @@
 			]
 		},
 		{
-			"name": "Punto 8",
-			"item": [
-				{
-					"name": "Post",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNzQxNzEsImV4cCI6MTcxODM3Nzc3MSwiaXNzIjoibG9jYWxob3N0In0.GhFx2XYOPy6VFgAsR_GPtow1R_-J4qhkOQgolaz8SsY",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"ColdPlay\",\r\n    \"description\": \"Un concierto muy PLAY\",\r\n    \"id_event_category\": 1,\r\n    \"id_event_location\": 1,\r\n    \"start_date\": \"2022/12/03 t 00:00:00\" ,\r\n    \"duration_in_minutes\": 210,\r\n    \"price\": 20000,\r\n    \"enabled_for_enrollment\": true,\r\n    \"max_assistance\": 90000\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:7777/api/event/",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "7777",
-							"path": [
-								"api",
-								"event",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTc3NjY5ODAsImV4cCI6MTcxNzc3MDU4MCwiaXNzIjoibG9jYWxob3N0In0.9ogf8Wh66VfBvgDw3f2l-hA2YYhZA6DJIWQ6ev_a5rU",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:7777/api/event/3",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "7777",
-							"path": [
-								"api",
-								"event",
-								"3"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Put",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNzQxNzEsImV4cCI6MTcxODM3Nzc3MSwiaXNzIjoibG9jYWxob3N0In0.GhFx2XYOPy6VFgAsR_GPtow1R_-J4qhkOQgolaz8SsY",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Harry Styles 2344\",\r\n    \"description\": \"Un concierto muy STYLES\",\r\n    \"id_event_category\": 1,\r\n    \"id_event_location\": 1,\r\n    \"start_date\": \"2022/12/03 t 00:00:00\" ,\r\n    \"duration_in_minutes\": 210,\r\n    \"price\": 17500,\r\n    \"enabled_for_enrollment\": true,\r\n    \"max_assistance\": 90000\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:7777/api/event/4",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "7777",
-							"path": [
-								"api",
-								"event",
-								"4"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Punto 9",
-			"item": [
-				{
-					"name": "Post",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNzQxNzEsImV4cCI6MTcxODM3Nzc3MSwiaXNzIjoibG9jYWxob3N0In0.GhFx2XYOPy6VFgAsR_GPtow1R_-J4qhkOQgolaz8SsY",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:7777/api/event/4/enrollment",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "7777",
-							"path": [
-								"api",
-								"event",
-								"4",
-								"enrollment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNzQxNzEsImV4cCI6MTcxODM3Nzc3MSwiaXNzIjoibG9jYWxob3N0In0.GhFx2XYOPy6VFgAsR_GPtow1R_-J4qhkOQgolaz8SsY",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:7777/api/event/1/enrollment",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "7777",
-							"path": [
-								"api",
-								"event",
-								"1",
-								"enrollment"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Punto 10",
-			"item": [
-				{
-					"name": "Patch",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNjI5MDAsImV4cCI6MTcxODM2NjUwMCwiaXNzIjoibG9jYWxob3N0In0.N0mlC0JXSomseDd9sv6jm3A0Q2lAd_wI3K15FLS65Ss",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"observations\": \"muy bueno\"    \r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:7777/api/event/3/enrollment/5",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "7777",
-							"path": [
-								"api",
-								"event",
-								"3",
-								"enrollment",
-								"5"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Punto 11",
+			"name": "Locations",
 			"item": [
 				{
 					"name": "GET ALL Locations",
@@ -584,7 +567,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MTgzNjI5MDAsImV4cCI6MTcxODM2NjUwMCwiaXNzIjoibG9jYWxob3N0In0.N0mlC0JXSomseDd9sv6jm3A0Q2lAd_wI3K15FLS65Ss",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJzY2hpZmZlcmp1bGlhbkBnbWFpbC5jb20iLCJpYXQiOjE3MjAxMjg2MzEsImV4cCI6MTcyMDEzMjIzMSwiaXNzIjoibG9jYWxob3N0In0.vN0Og275emw49dEexAtcsXHLqpiMbLJBS-3XFZOsbrI",
 									"type": "string"
 								}
 							]
@@ -703,7 +686,7 @@
 			]
 		},
 		{
-			"name": "Punto 12",
+			"name": "Event Category",
 			"item": [
 				{
 					"name": "GET Event-Category by ID",
@@ -861,7 +844,7 @@
 			]
 		},
 		{
-			"name": "Punto 13",
+			"name": "Event Location",
 			"item": [
 				{
 					"name": "GET Event Location by id",
